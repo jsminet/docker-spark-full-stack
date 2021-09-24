@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  spark-master:
+    image: spark:2.4.8
+    deploy:
+      replicas: 1
+    networks: 
+      - spark
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+
+  spark-worker:
+    image: spark:2.4.8
+    networks: 
+      - spark
+    ports:
+      - "8081:8081"
+    depends_on: 
+      - spark-master
+    command: worker spark://spark-master:7077
+
+networks:
+  spark:
+    external: true
