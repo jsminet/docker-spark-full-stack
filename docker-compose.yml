@@ -39,6 +39,23 @@ services:
       - "./app/spark:/app/spark"
       - "./drivers/mysql:/drivers/mysql"
 
+  spark-worker-2:
+    image: ${SPARK_IMAGE}
+    environment: 
+      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
+      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
+      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
+      - "SPARK_LOG_DIR=$SPARK_LOG_DIR/worker1"
+      - "SPARK_WORKER_DIR=$SPARK_WORKER_DIR/worker1"
+    ports:
+      - "8082:8081"
+    depends_on: 
+      - spark-master
+    command: worker spark://spark-master:$SPARK_MASTER_PORT
+    volumes:
+      - "./app/spark:/app/spark"
+      - "./drivers/mysql:/drivers/mysql"
+
   kyuubi:
     image: ${SPARK_IMAGE}
     environment:
@@ -77,11 +94,31 @@ services:
     volumes: 
       - "hadoop3:$HADOOP_CONF_DIR"
 
-  adminer:
-    image: adminer:latest
-    restart: always
+  datanode-2:
+    image: ${HADOOP_IMAGE}
+    depends_on: 
+      - namenode
+    environment: 
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
     ports:
-        - 7080:8080
+      - 9865:9864
+    command: datanode
+    volumes: 
+      - "hadoop3:$HADOOP_CONF_DIR"
+
+  zeppelin:
+    image: apache/zeppelin:0.10.0
+    environment:
+      - "SPARK_MASTER=spark://spark-master:$SPARK_MASTER_PORT"
+      - "SPARK_HOME=/opt/spark"
+      - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
+      - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
+      - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
+    ports:
+      - "9080:8080"
+    volumes:
+      - "./app/zeppelin:/app/zeppelin"
+      - "spark3:/opt/spark"
 
 volumes: 
   spark3:
