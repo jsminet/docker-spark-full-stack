@@ -23,5 +23,6 @@ services:
       - stack-spark_default
 
 networks:
-  stack-spark_default:
+  default:
     external: true
+    name: stack-spark_default
