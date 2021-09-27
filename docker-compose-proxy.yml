@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  viz:
+    image: alexellis2/visualizer-arm:latest
+    environment:
+      - VIRTUAL_HOST=viz.local
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints: [node.role == manager]
