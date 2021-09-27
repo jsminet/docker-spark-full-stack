@@ -7,8 +7,11 @@ services:
       - "80:80"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     networks:
-      - stack-spark_default
+      - netproxy
 
   viz:
     image: alexellis2/visualizer-arm:latest
@@ -20,9 +23,10 @@ services:
       placement:
         constraints: [node.role == manager]
     networks:
-      - stack-spark_default
+      - netproxy
 
 networks:
-  default:
+  netproxy:
+    driver: overlay
     external: true
-    name: stack-spark_default
+    attachable: true
