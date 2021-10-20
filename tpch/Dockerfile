@@ -21,20 +21,20 @@ ENV BUILD_DEPS \
  git \
  make
 
+WORKDIR /opt
+
 RUN apt-get update && \
   apt-get install -y ${BUILD_DEPS} && \
   git clone https://github.com/jsminet/hive-benchmark.git && \
   wget --progress=bar:force:noscroll -O kyuubi-spark-bin-hadoop.tgz \
-             "https://github.com/NetEase/kyuubi/releases/download/v${KYUUBI_VERSION}/kyuubi-${KYUUBI_VERSION}-bin-spark-${SPARK_MAJOR_VERSION}-hadoop${HADOOP_MAJOR_VERSION}.tar.gz" && \ 
+    "https://github.com/NetEase/kyuubi/releases/download/v${KYUUBI_VERSION}/kyuubi-${KYUUBI_VERSION}-bin-spark-${SPARK_MAJOR_VERSION}-hadoop${HADOOP_MAJOR_VERSION}.tar.gz" && \ 
   tar -xvf kyuubi-spark-bin-hadoop.tgz && \
   rm kyuubi-spark-bin-hadoop.tgz && \
   wget --progress=bar:force:noscroll -O hadoop-binary.tar.gz \
-  "http://apache.mirror.iphh.net/hadoop/common/hadoop-${HADOOP_MINOR_VERSION}/hadoop-${HADOOP_MINOR_VERSION}.tar.gz" && \
+    "http://apache.mirror.iphh.net/hadoop/common/hadoop-${HADOOP_MINOR_VERSION}/hadoop-${HADOOP_MINOR_VERSION}.tar.gz" && \
   tar -xvf hadoop-binary.tar.gz && \
   rm hadoop-binary.tar.gz && \
   rm -rf /opt/hadoop-${HADOOP_MINOR_VERSION}/share/doc && \
   rm -rf /var/lib/apt/lists/*
-
-WORKDIR /hive-benchmark
 
 CMD ["bash"]
