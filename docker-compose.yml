@@ -28,8 +28,8 @@ services:
 
   spark-master:
     image: ${SPARK_IMAGE}
-         # We set a label to tell Traefik to assign a hostname to the new service
     build: ./app/spark/dockerfile
+    # We set a label to tell Traefik to assign a hostname to the new service
     labels:
        - "traefik.http.routers.spark-master.rule=Host(`spark.easybi.lu`)"
     environment: 
@@ -79,6 +79,9 @@ services:
   namenode:
     image: ${HADOOP_IMAGE}
     build: ./app/hadoop/dockerfile
+        # We set a label to tell Traefik to assign a hostname to the new service
+    labels:
+       - "traefik.http.routers.namenode.rule=Host(`hadoop.easybi.lu`)"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
     ports:
