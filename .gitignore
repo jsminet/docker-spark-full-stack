@@ -3,6 +3,5 @@ app/spark/work/*
 app/kyuubi/logs/*
 app/kyuubi/work/*
 app/zeppelin/logs/*
-app/**
 drivers/**
 *.jar
