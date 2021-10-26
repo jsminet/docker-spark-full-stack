@@ -1,6 +1,22 @@
 version: '3.7'
 
 services:
+  traefik:
+    # The latest official supported Traefik docker image
+    image: traefik:v2.5
+    # Enables the Traefik Dashboard and tells Traefik to listen to docker
+    # --providers tell Traefik to connect to the Docker provider
+    # enable --log.level=INFO so we can see what Traefik is doing in the log files
+    command: --api.insecure=true --providers.docker --log.level=INFO
+    ports:
+      # Exposes port 80 for incomming web requests
+      - "80:80"
+      # The Web UI port http://0.0.0.0:8080 (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+
   mysql-hive:
     image: mysql:5.7.33
     environment: 
@@ -12,6 +28,9 @@ services:
 
   spark-master:
     image: ${SPARK_IMAGE}
+         # We set a label to tell Traefik to assign a hostname to the new service
+     labels:
+       - "traefik.http.routers.spark-master.rule=Host(`spark.easybi.lu`)"
     environment: 
       - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
       - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
@@ -32,23 +51,6 @@ services:
       - "SPARK_WORKER_DIR=$SPARK_WORKER_DIR/worker1"
     ports:
       - "8081:8081"
-    depends_on: 
-      - spark-master
-    command: worker spark://spark-master:$SPARK_MASTER_PORT
-    volumes:
-      - "./app/spark:/app/spark"
-      - "./drivers/mysql:/drivers/mysql"
-
-  spark-worker-2:
-    image: ${SPARK_IMAGE}
-    environment: 
-      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
-      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
-      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
-      - "SPARK_LOG_DIR=$SPARK_LOG_DIR/worker1"
-      - "SPARK_WORKER_DIR=$SPARK_WORKER_DIR/worker1"
-    ports:
-      - "8082:8081"
     depends_on: 
       - spark-master
     command: worker spark://spark-master:$SPARK_MASTER_PORT
@@ -94,32 +96,5 @@ services:
     volumes: 
       - "hadoop3:$HADOOP_CONF_DIR"
 
-  datanode-2:
-    image: ${HADOOP_IMAGE}
-    depends_on: 
-      - namenode
-    environment: 
-      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
-    ports:
-      - 9865:9864
-    command: datanode
-    volumes: 
-      - "hadoop3:$HADOOP_CONF_DIR"
-
-  zeppelin:
-    image: apache/zeppelin:0.10.0
-    environment:
-      - "SPARK_MASTER=spark://spark-master:$SPARK_MASTER_PORT"
-      - "SPARK_HOME=/opt/spark"
-      - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
-      - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
-      - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
-    ports:
-      - "9080:8080"
-    volumes:
-      - "./app/zeppelin:/app/zeppelin"
-      - "spark3:/opt/spark"
-
 volumes: 
-  spark3:
   hadoop3:
