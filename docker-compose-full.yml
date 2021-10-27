@@ -1,0 +1,125 @@
+version: '3.7'
+
+services:
+  mysql-hive:
+    image: mysql:5.7.33
+    environment: 
+      - "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"
+    ports:
+      - "3307:3306"
+    volumes:
+      - "./db/mysql/dump/hive/2.3.9:/docker-entrypoint-initdb.d"
+
+  spark-master:
+    image: ${SPARK_IMAGE}
+    environment: 
+      - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
+      - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
+      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
+      - "SPARK_LOG_DIR=$SPARK_LOG_DIR/master"
+    ports:
+      - "$SPARK_MASTER_WEBUI_PORT:$SPARK_MASTER_WEBUI_PORT"
+    volumes:
+      - "./app/spark:/app/spark"
+
+  spark-worker-1:
+    image: ${SPARK_IMAGE}
+    environment: 
+      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
+      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
+      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
+      - "SPARK_LOG_DIR=$SPARK_LOG_DIR/worker1"
+      - "SPARK_WORKER_DIR=$SPARK_WORKER_DIR/worker1"
+    ports:
+      - "8081:8081"
+    depends_on: 
+      - spark-master
+    command: worker spark://spark-master:$SPARK_MASTER_PORT
+    volumes:
+      - "./app/spark:/app/spark"
+      - "./drivers/mysql:/drivers/mysql"
+
+  spark-worker-2:
+    image: ${SPARK_IMAGE}
+    environment: 
+      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
+      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
+      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
+      - "SPARK_LOG_DIR=$SPARK_LOG_DIR/worker1"
+      - "SPARK_WORKER_DIR=$SPARK_WORKER_DIR/worker1"
+    ports:
+      - "8082:8081"
+    depends_on: 
+      - spark-master
+    command: worker spark://spark-master:$SPARK_MASTER_PORT
+    volumes:
+      - "./app/spark:/app/spark"
+      - "./drivers/mysql:/drivers/mysql"
+
+  kyuubi:
+    image: ${SPARK_IMAGE}
+    environment:
+      - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "KYUUBI_WORK_DIR_ROOT=$KYUUBI_WORK_DIR_ROOT"
+    ports:
+      - "$KYUUBI_FRONTEND_BIND_PORT:$KYUUBI_FRONTEND_BIND_PORT"
+    depends_on: 
+      - spark-worker-1
+      - datanode-1
+    command: kyuubi
+    volumes:
+      - "./app/kyuubi:/app/kyuubi"
+      - "./drivers/mysql:/drivers/mysql"
+
+  namenode:
+    image: ${HADOOP_IMAGE}
+    environment: 
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+    ports:
+      - "$DFS_NAMENODE_HTTP_PORT:$DFS_NAMENODE_HTTP_PORT"
+    volumes: 
+      - "hadoop3:$HADOOP_CONF_DIR"
+
+  datanode-1:
+    image: ${HADOOP_IMAGE}
+    depends_on: 
+      - namenode
+    environment: 
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+    ports:
+      - 9864:9864
+    command: datanode
+    volumes: 
+      - "hadoop3:$HADOOP_CONF_DIR"
+
+  datanode-2:
+    image: ${HADOOP_IMAGE}
+    depends_on: 
+      - namenode
+    environment: 
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+    ports:
+      - 9865:9864
+    command: datanode
+    volumes: 
+      - "hadoop3:$HADOOP_CONF_DIR"
+
+  zeppelin:
+    image: apache/zeppelin:0.10.0
+    environment:
+      - "SPARK_MASTER=spark://spark-master:$SPARK_MASTER_PORT"
+      - "SPARK_HOME=/opt/spark"
+      - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
+      - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
+      - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
+    ports:
+      - "9080:8080"
+    volumes:
+      - "./app/zeppelin:/app/zeppelin"
+      - "spark3:/opt/spark"
+
+volumes: 
+  spark3:
+  hadoop3:

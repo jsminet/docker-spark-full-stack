@@ -1042,7 +1042,7 @@
         },
         "spark.executor.instances": {
           "name": "spark.executor.instances",
-          "value": "2",
+          "value": "1",
           "type": "number",
           "description": "The number of executors for static allocation."
         },
@@ -1054,7 +1054,7 @@
         },
         "spark.jars": {
           "name": "spark.jars",
-          "value": "local:///app/spark/jars/mysql-connector-java-5.1.49.jar",
+          "value": "local:///drivers/mysql/mysql-connector-java-5.1.49.jar",
           "type": "string",
           "description": "Comma-separated list of jars to include on the driver and executor classpaths. Globs are allowed."
         },
@@ -1189,9 +1189,14 @@
           "value": true,
           "type": "checkbox",
           "description": "Show short types instead of full, e.g. List\u003cString\u003e or kotlin.collections.List\u003ckotlin.String\u003e"
+        },
+        "spark.cores.max": {
+          "name": "spark.cores.max",
+          "value": "2",
+          "type": "number"
         }
       },
-      "status": "READY",
+      "status": "DOWNLOADING_DEPENDENCIES",
       "interpreterGroup": [
         {
           "name": "spark",
@@ -1291,8 +1296,8 @@
       "option": {
         "remote": true,
         "port": -1,
-        "perNote": "shared",
-        "perUser": "shared",
+        "perNote": "isolated",
+        "perUser": "",
         "isExistingProcess": false,
         "setPermission": false,
         "owners": [],
