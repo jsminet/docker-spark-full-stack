@@ -2,12 +2,11 @@ version: '3.7'
 
 services:
   traefik:
-    # The latest official supported Traefik docker image
     image: traefik:v2.5
-    # Enables the Traefik Dashboard and tells Traefik to listen to docker
-    # --providers tell Traefik to connect to the Docker provider
-    # enable --log.level=INFO so we can see what Traefik is doing in the log files
-    command: --api.insecure=true --providers.docker --log.level=INFO
+    environment:
+      - TRAEFIK_API_INSECURE=$TRAEFIK_API_INSECURE
+      - TRAEFIK_PROVIDERS_DOCKER=$TRAEFIK_PROVIDERS_DOCKER
+      - TRAEFIK_LOG_LEVEL=$TRAEFIK_LOG_LEVEL
     ports:
       # Exposes port 80 for incomming web requests
       - "80:80"
@@ -31,7 +30,7 @@ services:
     build: ./app/spark/dockerfile
     # We set a label to tell Traefik to assign a hostname to the new service
     labels:
-       - "traefik.http.routers.spark-master.rule=Host(`spark.easybi.lu`)"
+       - "traefik.http.routers.spark-master.rule=Host(`$SPARK_DNS`)"
     environment: 
       - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
       - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
@@ -81,7 +80,7 @@ services:
     build: ./app/hadoop/dockerfile
         # We set a label to tell Traefik to assign a hostname to the new service
     labels:
-       - "traefik.http.routers.namenode.rule=Host(`hadoop.easybi.lu`)"
+       - "traefik.http.routers.namenode.rule=Host(`$HADOOP_DNS`)"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
     ports:
