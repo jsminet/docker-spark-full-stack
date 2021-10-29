@@ -24,7 +24,6 @@ services:
 
   spark-master:
     image: ${SPARK_IMAGE}
-    build: ./app/spark/dockerfile
     # We set a label to tell Traefik to assign a hostname to the new service
     labels:
       - "traefik.enable=true"
@@ -74,7 +73,6 @@ services:
 
   namenode:
     image: ${HADOOP_IMAGE}
-    build: ./app/hadoop/dockerfile
     # We set labels to tell Traefik to assign a hostname to the new service
     labels:
       - "traefik.enable=true"
@@ -84,6 +82,7 @@ services:
       - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     volumes: 
       - "hadoop3:$HADOOP_CONF_DIR"
 
@@ -93,6 +92,7 @@ services:
       - namenode
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     command: datanode
     volumes: 
       - "hadoop3:$HADOOP_CONF_DIR"
