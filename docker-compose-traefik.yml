@@ -3,10 +3,6 @@ version: '3.7'
 services:
   traefik:
     image: traefik:v2.5
-    environment:
-      - TRAEFIK_API_INSECURE=$TRAEFIK_API_INSECURE
-      - TRAEFIK_PROVIDERS_DOCKER=$TRAEFIK_PROVIDERS_DOCKER
-      - TRAEFIK_LOG_LEVEL=$TRAEFIK_LOG_LEVEL
     ports:
       # Exposes port 80 for incomming web requests
       - "80:80"
@@ -15,6 +11,7 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
 
   mysql-hive:
     image: mysql:5.7.33
@@ -30,14 +27,16 @@ services:
     build: ./app/spark/dockerfile
     # We set a label to tell Traefik to assign a hostname to the new service
     labels:
-       - "traefik.http.routers.spark-master.rule=Host(`$SPARK_DNS`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.spark-master.rule=Host(`$SPARK_DNS`)"
+      - "traefik.http.routers.spark-master.entrypoints=web"
+      - "traefik.http.routers.spark-master.service=spark-master"
+      - "traefik.http.services.spark-master.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     environment: 
       - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
       - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
       - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
       - "SPARK_LOG_DIR=$SPARK_LOG_DIR/master"
-    ports:
-      - "$SPARK_MASTER_WEBUI_PORT:$SPARK_MASTER_WEBUI_PORT"
     volumes:
       - "./app/spark:/app/spark"
 
@@ -59,14 +58,16 @@ services:
   kyuubi:
     image: ${SPARK_IMAGE}
     labels:
-      - "traefik.http.routers.namenode.rule=Host(`$KYUUBI_DNS`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.kyuubi.rule=Host(`$KYUUBI_DNS`)"
+      - "traefik.http.routers.kyuubi.entrypoints=web"
+      - "traefik.http.routers.kyuubi.service=kyuubi"
+      - "traefik.http.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
     environment:
       - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
       - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
       - "KYUUBI_WORK_DIR_ROOT=$KYUUBI_WORK_DIR_ROOT"
-    ports:
-      - "$KYUUBI_FRONTEND_BIND_PORT:$KYUUBI_FRONTEND_BIND_PORT"
     depends_on: 
       - spark-worker-1
       - datanode-1
@@ -78,9 +79,13 @@ services:
   namenode:
     image: ${HADOOP_IMAGE}
     build: ./app/hadoop/dockerfile
-        # We set a label to tell Traefik to assign a hostname to the new service
+    # We set labels to tell Traefik to assign a hostname to the new service
     labels:
-       - "traefik.http.routers.namenode.rule=Host(`$HADOOP_DNS`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.namenode.rule=Host(`$HADOOP_DNS`)"
+      - "traefik.http.routers.namenode.entrypoints=web"
+      - "traefik.http.routers.namenode.service=namenode"
+      - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
     volumes: 
