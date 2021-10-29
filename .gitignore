@@ -5,3 +5,4 @@ app/kyuubi/work/*
 app/zeppelin/logs/*
 drivers/**
 *.jar
+*.sql.gz
