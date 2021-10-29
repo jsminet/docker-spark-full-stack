@@ -57,12 +57,6 @@ services:
 
   kyuubi:
     image: ${SPARK_IMAGE}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.kyuubi.rule=Host(`$KYUUBI_DNS`)"
-      - "traefik.http.routers.kyuubi.entrypoints=web"
-      - "traefik.http.routers.kyuubi.service=kyuubi"
-      - "traefik.http.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
     environment:
       - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
       - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
@@ -71,6 +65,8 @@ services:
     depends_on: 
       - spark-worker-1
       - datanode-1
+    ports:
+      - "$KYUUBI_FRONTEND_BIND_PORT:$KYUUBI_FRONTEND_BIND_PORT"
     command: kyuubi
     volumes:
       - "./app/kyuubi:/app/kyuubi"
