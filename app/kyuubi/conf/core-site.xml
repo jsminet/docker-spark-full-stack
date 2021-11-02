@@ -22,24 +22,6 @@
     <value>hdfs://namenode:8020</value>
   </property>
 
-  <property>
-    <name>hadoop.proxyuser.root.hosts</name>
-    <value>*</value>
-  </property>
-  <property>
-    <name>hadoop.proxyuser.root.groups</name>
-    <value>*</value>
-  </property>
 
-
-  <!--property>
-    <name>hadoop.proxyuser.root.groups</name>
-    <value>*</value>
-  </property>
-
-  <property>
-    <name>hadoop.proxyuser.root.hosts</name>
-    <value>*</value>
-  </property-->
 
 </configuration>

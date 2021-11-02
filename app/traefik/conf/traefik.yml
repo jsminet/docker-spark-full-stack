@@ -13,6 +13,7 @@ api:
 providers:
   docker:
     exposedByDefault: false
+    swarmMode: false
 ################################################################
 # Traefik Logging
 ################################################################
