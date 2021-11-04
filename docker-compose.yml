@@ -64,7 +64,7 @@ services:
     ports:
       - "$DFS_NAMENODE_HTTP_PORT:$DFS_NAMENODE_HTTP_PORT"
     volumes: 
-      - "hadoop3:$HADOOP_CONF_DIR"
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
 
   datanode-1:
     image: ${HADOOP_IMAGE}
@@ -77,7 +77,4 @@ services:
       - 9864:9864
     command: datanode
     volumes: 
-      - "hadoop3:$HADOOP_CONF_DIR"
-
-volumes: 
-  hadoop3:
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"

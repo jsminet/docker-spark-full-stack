@@ -84,7 +84,7 @@ services:
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     volumes: 
-      - "hadoop3:$HADOOP_CONF_DIR"
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
 
   datanode-1:
     image: ${HADOOP_IMAGE}
@@ -95,7 +95,4 @@ services:
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     command: datanode
     volumes: 
-      - "hadoop3:$HADOOP_CONF_DIR"
-
-volumes: 
-  hadoop3:
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
