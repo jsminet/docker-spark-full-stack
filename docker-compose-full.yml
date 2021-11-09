@@ -12,7 +12,7 @@ services:
 
   spark-master:
     image: ${SPARK_IMAGE}
-    build: ./app/spark/dockerfile
+    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.2.0
     environment: 
       - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
       - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
@@ -76,7 +76,7 @@ services:
 
   namenode:
     image: ${HADOOP_IMAGE}
-    build: ./app/hadoop/dockerfile
+    build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
     ports:

@@ -24,6 +24,7 @@ services:
 
   spark-master:
     image: ${SPARK_IMAGE}
+    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.2.0
     # We set a label to tell Traefik to assign a hostname to the new service
     labels:
       - "traefik.enable=true"
@@ -73,6 +74,7 @@ services:
 
   namenode:
     image: ${HADOOP_IMAGE}
+    build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
     # We set labels to tell Traefik to assign a hostname to the new service
     labels:
       - "traefik.enable=true"
