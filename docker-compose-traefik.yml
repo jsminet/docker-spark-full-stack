@@ -12,6 +12,17 @@ services:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
+  
+  viz:
+    image: alexellis2/visualizer-arm:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.viz.rule=Host(`$VIZ_DNS`)"
+      - "traefik.http.routers.viz.entrypoints=web"
+      - "traefik.http.routers.viz.service=viz"
+      - "traefik.http.services.viz.loadbalancer.server.port=8080"
 
   mysql-hive:
     image: mariadb:10.7
