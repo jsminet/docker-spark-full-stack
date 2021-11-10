@@ -59,8 +59,6 @@ services:
       - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
       - "SPARK_LOG_DIR=$SPARK_LOG_DIR/worker1"
       - "SPARK_WORKER_DIR=$SPARK_WORKER_DIR/worker1"
-    depends_on: 
-      - spark-master
     command: worker spark://spark-master:$SPARK_MASTER_PORT
     volumes:
       - "./app/spark:/app/spark"
@@ -73,9 +71,6 @@ services:
       - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
       - "KYUUBI_WORK_DIR_ROOT=$KYUUBI_WORK_DIR_ROOT"
-    depends_on: 
-      - spark-worker-1
-      - datanode-1
     ports:
       - "$KYUUBI_FRONTEND_BIND_PORT:$KYUUBI_FRONTEND_BIND_PORT"
     command: kyuubi
@@ -101,8 +96,6 @@ services:
 
   datanode-1:
     image: ${HADOOP_IMAGE}
-    depends_on: 
-      - namenode
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
