@@ -14,7 +14,7 @@ services:
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
 
   mysql-hive:
-    image: mysql:5.7.33
+    image: mariadb:10.7
     environment: 
       - "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"
     ports:
