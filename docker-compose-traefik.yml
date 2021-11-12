@@ -98,6 +98,7 @@ services:
     image: ${HADOOP_IMAGE}
     build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
     # We set labels to tell Traefik to assign a hostname to the new service
+    hostname: namenode
     deploy:
       placement:
         constraints:
