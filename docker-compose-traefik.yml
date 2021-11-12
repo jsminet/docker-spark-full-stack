@@ -12,17 +12,25 @@ services:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
   
   viz:
     image: alexellis2/visualizer-arm:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.viz.rule=Host(`$VIZ_DNS`)"
-      - "traefik.http.routers.viz.entrypoints=web"
-      - "traefik.http.routers.viz.service=viz"
-      - "traefik.http.services.viz.loadbalancer.server.port=8080"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.viz.rule=Host(`$VIZ_DNS`)"
+        - "traefik.http.routers.viz.entrypoints=web"
+        - "traefik.http.routers.viz.service=viz"
+        - "traefik.http.services.viz.loadbalancer.server.port=8080"
 
   mysql-hive:
     image: mariadb:10.7
@@ -37,12 +45,16 @@ services:
     image: ${SPARK_IMAGE}
     build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.2.0
     # We set a label to tell Traefik to assign a hostname to the new service
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.spark-master.rule=Host(`$SPARK_DNS`)"
-      - "traefik.http.routers.spark-master.entrypoints=web"
-      - "traefik.http.routers.spark-master.service=spark-master"
-      - "traefik.http.services.spark-master.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.spark-master.rule=Host(`$SPARK_DNS`)"
+        - "traefik.http.routers.spark-master.entrypoints=web"
+        - "traefik.http.routers.spark-master.service=spark-master"
+        - "traefik.http.services.spark-master.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     environment: 
       - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
       - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
@@ -71,6 +83,10 @@ services:
       - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
       - "KYUUBI_WORK_DIR_ROOT=$KYUUBI_WORK_DIR_ROOT"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
     ports:
       - "$KYUUBI_FRONTEND_BIND_PORT:$KYUUBI_FRONTEND_BIND_PORT"
     command: kyuubi
@@ -82,12 +98,16 @@ services:
     image: ${HADOOP_IMAGE}
     build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
     # We set labels to tell Traefik to assign a hostname to the new service
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.namenode.rule=Host(`$HADOOP_DNS`)"
-      - "traefik.http.routers.namenode.entrypoints=web"
-      - "traefik.http.routers.namenode.service=namenode"
-      - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.namenode.rule=Host(`$HADOOP_DNS`)"
+          - "traefik.http.routers.namenode.entrypoints=web"
+          - "traefik.http.routers.namenode.service=namenode"
+          - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
