@@ -29,3 +29,5 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
+  other:
+    address: ":10009"
