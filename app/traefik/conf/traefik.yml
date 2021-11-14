@@ -31,3 +31,5 @@ entryPoints:
     address: ":443"
   other:
     address: ":10009"
+  mysql:
+    address: ":3306"

@@ -36,11 +36,15 @@ services:
     image: mariadb:10.7
     environment: 
       - "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"
-    ports:
-      - "3307:3306"
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tcp.services.mysql-hive.loadbalancer.server.port=3306"
+        - "traefik.tcp.routers.mysql-hive.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.mysql-hive.entrypoints=mysql"
     volumes:
       - "./db/mysql/dump/hive/2.3.9:/docker-entrypoint-initdb.d"
-
+    
   spark-master:
     image: ${SPARK_IMAGE}
     build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.2.0
