@@ -17,20 +17,24 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-    <property>
-            <name>dfs.namenode.name.dir</name>
-            <value>${DFS_NAMENODE_NAME_DIR}</value>
-    </property>    
-    <property>
-            <name>dfs.datanode.data.dir</name>
-            <value>${DFS_DATANODE_DATA_DIR}</value>
-    </property>    
-    <property>
-            <name>dfs.replication</name>
-            <value>${DFS_REPLICATION}</value>
-    </property>
-    <property>
-            <name>dfs.namenode.http-address</name>
-            <value>${DFS_NAMENODE_HTTP_ADDRESS}</value>
-    </property>
+        <property>
+                <name>dfs.namenode.name.dir</name>
+                <value>${DFS_NAMENODE_NAME_DIR}</value>
+        </property>
+        <property>
+                <name>dfs.datanode.data.dir</name>
+                <value>${DFS_DATANODE_DATA_DIR}</value>
+        </property>
+        <property>
+                <name>dfs.replication</name>
+                <value>${DFS_REPLICATION}</value>
+        </property>
+        <property>
+                <name>dfs.namenode.http-address</name>
+                <value>${DFS_NAMENODE_HTTP_ADDRESS}</value>
+        </property>
+        <property>
+                <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+                <value>false</value>
+        </property>
 </configuration>
