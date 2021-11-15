@@ -15,6 +15,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
     deploy:
+      update_config:
+        delay: 10s
+        order: start-first
       placement:
         constraints:
           - node.role == manager
@@ -69,7 +72,7 @@ services:
     volumes:
       - "./app/spark:/app/spark"
 
-  spark-worker-1:
+  spark-worker:
     image: ${SPARK_IMAGE}
     deploy:
       placement:
@@ -114,6 +117,7 @@ services:
     # We set labels to tell Traefik to assign a hostname to the new service
     hostname: namenode
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.role == manager
@@ -130,9 +134,10 @@ services:
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
 
-  datanode-1:
+  datanode:
     image: ${HADOOP_IMAGE}
     deploy:
+      mode: replicated
       replicas: 3
       placement:
         constraints:
