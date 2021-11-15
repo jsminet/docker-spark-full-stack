@@ -13,7 +13,6 @@ api:
 providers:
   docker:
     exposedByDefault: false
-    endpoint: "tcp://192.168.0.8:2377"
     swarmMode: true
     watch: true
 ################################################################
@@ -30,7 +29,7 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
-  other:
+  kyuubi:
     address: ":10009"
   mysql:
     address: ":3306"
