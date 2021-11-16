@@ -3,7 +3,7 @@
 Apache Spark and Kyuubi demo with Hadoop, Zeppelin, Hive on Mysql running on docker Swarm
 
 ## Useful command
----
+
 ### Launching with docker compose
 
 ``docker compose up --remove-orphans``

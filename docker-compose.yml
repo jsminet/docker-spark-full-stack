@@ -91,6 +91,7 @@ services:
 
   kyuubi:
     image: ${SPARK_IMAGE}
+    hostname: kyuubi
     environment:
       - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
       - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
@@ -149,3 +150,13 @@ services:
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+
+  hive-benchmark:
+    image: https://github.com/jsminet/hive-benchmark.git#master
+    deploy:
+      placement:
+        constraints:
+          - node.role == master
+    environment: 
+      - "KYUUBI_MASTER_HOST=kyuubi"
+      - "$KYUUBI_FRONTEND_BIND_PORT=$KYUUBI_FRONTEND_BIND_PORT"
