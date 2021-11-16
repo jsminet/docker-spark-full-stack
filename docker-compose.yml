@@ -152,7 +152,8 @@ services:
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
 
   hive-benchmark:
-    image: https://github.com/jsminet/hive-benchmark.git#master
+    image: hive-benchmark:latest
+    build: https://github.com/jsminet/hive-benchmark.git#master
     deploy:
       placement:
         constraints:
