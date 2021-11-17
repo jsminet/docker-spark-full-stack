@@ -160,5 +160,8 @@ services:
           - node.role == master
     environment: 
       - "KYUUBI_MASTER_HOST=kyuubi"
-      - "$KYUUBI_FRONTEND_BIND_PORT=$KYUUBI_FRONTEND_BIND_PORT"
-    command: tail -f /dev/null
+      - "KYUUBI_FRONTEND_BIND_PORT=$KYUUBI_FRONTEND_BIND_PORT"
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+    volumes: 
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
