@@ -194,7 +194,7 @@ services:
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
 
   hive-benchmark:
-    image: hive-benchmark:latest
+    image: jsminet/hive-benchmark:latest
     build: https://github.com/jsminet/hive-benchmark.git#master
     environment: 
       - "KYUUBI_MASTER_HOST=kyuubi"
