@@ -91,6 +91,7 @@ services:
           - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
       - "DFS_REPLICATION=$DFS_REPLICATION"
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     volumes: 
@@ -111,6 +112,7 @@ services:
           - "traefik.http.services.resourcemanager.loadbalancer.server.port=$YARN_RESOURCEMANAGER_HTTP_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
       - "YARN_CONF_DIR=$YARN_CONF_DIR"
     command: resourcemanager
@@ -132,6 +134,7 @@ services:
           - "traefik.http.services.nodemanager.loadbalancer.server.port=$YARN_NODEMANAGER_HTTP_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
       - "YARN_CONF_DIR=$YARN_CONF_DIR"
     command: nodemanager
@@ -148,6 +151,7 @@ services:
           - node.role == worker
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
       - "DFS_REPLICATION=$DFS_REPLICATION"
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     command: datanode
