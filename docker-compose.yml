@@ -59,6 +59,7 @@ services:
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
       - "KYUUBI_WORK_DIR_ROOT=$KYUUBI_WORK_DIR_ROOT"
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.role == manager
