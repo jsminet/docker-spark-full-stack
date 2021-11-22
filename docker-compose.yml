@@ -154,13 +154,10 @@ services:
   hive-benchmark:
     image: hive-benchmark:latest
     build: https://github.com/jsminet/hive-benchmark.git#master
-    deploy:
-      placement:
-        constraints:
-          - node.role == master
     environment: 
       - "KYUUBI_MASTER_HOST=kyuubi"
       - "KYUUBI_FRONTEND_BIND_PORT=$KYUUBI_FRONTEND_BIND_PORT"
+      - "DFS_REPLICATION=$DFS_REPLICATION"
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     volumes: 
