@@ -101,6 +101,7 @@ services:
     image: ${HADOOP_IMAGE}
     hostname: $YARN_RESOURCEMANAGER_HOSTNAME
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.role == manager
@@ -123,6 +124,7 @@ services:
     image: ${HADOOP_IMAGE}
     hostname: $YARN_NODEMANAGE_HOSTNAME
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.role == manager
