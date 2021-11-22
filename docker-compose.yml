@@ -135,6 +135,48 @@ services:
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
 
+  resourcemanager:
+    image: ${HADOOP_IMAGE}
+    hostname: $YARN_RESOURCEMANAGER_HOSTNAME
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.resourcemanager.rule=Host(`$RESOURCEMANAGER_DNS`)"
+          - "traefik.http.routers.resourcemanager.entrypoints=web"
+          - "traefik.http.routers.resourcemanager.service=resourcemanager"
+          - "traefik.http.services.resourcemanager.loadbalancer.server.port=$YARN_RESOURCEMANAGER_HTTP_PORT"
+    environment: 
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+      - "YARN_CONF_DIR=$YARN_CONF_DIR"
+    command: resourcemanager
+    volumes: 
+      - "./app/hadoop/conf/etc/hadoop:$YARN_CONF_DIR"
+
+  nodemanager:
+    image: ${HADOOP_IMAGE}
+    hostname: $YARN_NODEMANAGE_HOSTNAME
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.nodemanager.rule=Host(`$NODEMANAGER_DNS`)"
+          - "traefik.http.routers.nodemanager.entrypoints=web"
+          - "traefik.http.routers.nodemanager.service=nodemanager"
+          - "traefik.http.services.nodemanager.loadbalancer.server.port=$YARN_NODEMANAGER_HTTP_PORT"
+    environment: 
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+      - "YARN_CONF_DIR=$YARN_CONF_DIR"
+    command: nodemanager
+    volumes: 
+      - "./app/hadoop/conf/etc/hadoop:$YARN_CONF_DIR"
+
   datanode:
     image: ${HADOOP_IMAGE}
     deploy:
