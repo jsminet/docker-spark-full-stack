@@ -49,45 +49,6 @@ services:
         - "traefik.tcp.routers.mysql-hive.entrypoints=mysql"
     volumes:
       - "./db/mysql/dump/hive/2.3.9:/docker-entrypoint-initdb.d"
-    
-  spark-master:
-    image: ${SPARK_IMAGE}
-    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.2.0
-    # We set a label to tell Traefik to assign a hostname to the new service
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.spark-master.rule=Host(`$SPARK_DNS`)"
-        - "traefik.http.routers.spark-master.entrypoints=web"
-        - "traefik.http.routers.spark-master.service=spark-master"
-        - "traefik.http.services.spark-master.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
-    environment: 
-      - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
-      - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
-      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
-      - "SPARK_LOG_DIR=$SPARK_LOG_DIR/master"
-    volumes:
-      - "./app/spark:/app/spark"
-
-  spark-worker:
-    image: ${SPARK_IMAGE}
-    deploy:
-      placement:
-        constraints:
-          - node.role == worker
-    environment: 
-      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
-      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
-      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
-      - "SPARK_LOG_DIR=$SPARK_LOG_DIR/worker1"
-      - "SPARK_WORKER_DIR=$SPARK_WORKER_DIR/worker1"
-    command: worker spark://spark-master:$SPARK_MASTER_PORT
-    volumes:
-      - "./app/spark:/app/spark"
-      - "./drivers/mysql:/drivers/mysql"
 
   kyuubi:
     image: ${SPARK_IMAGE}
