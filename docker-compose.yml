@@ -143,6 +143,7 @@ services:
     command: nodemanager
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$YARN_CONF_DIR"
+      - "./drivers/mysql:/drivers/mysql"
 
   datanode:
     image: ${HADOOP_IMAGE}
