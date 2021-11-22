@@ -123,18 +123,12 @@ services:
 
   nodemanager:
     image: ${HADOOP_IMAGE}
-    hostname: $YARN_NODEMANAGE_HOSTNAME
     deploy:
-      endpoint_mode: dnsrr
+      mode: replicated
+      replicas: 3
       placement:
         constraints:
-          - node.role == manager
-      labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.nodemanager.rule=Host(`$NODEMANAGER_DNS`)"
-          - "traefik.http.routers.nodemanager.entrypoints=web"
-          - "traefik.http.routers.nodemanager.service=nodemanager"
-          - "traefik.http.services.nodemanager.loadbalancer.server.port=$YARN_NODEMANAGER_HTTP_PORT"
+          - node.role == worker
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
