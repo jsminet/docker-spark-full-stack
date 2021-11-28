@@ -175,5 +175,7 @@ services:
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
 
   zookeeper:
-    image: zookeeper
+    image: zookeeper:latest
     hostname: zookeeper
+    volumes: 
+      - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
