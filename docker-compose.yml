@@ -145,6 +145,7 @@ services:
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$YARN_CONF_DIR"
       - "./drivers/mysql:/drivers/mysql"
+      - "spark-shuffle:/opt/hadoop-3.2.2/share/hadoop/yarn/lib"
 
   datanode:
     image: ${HADOOP_IMAGE}
