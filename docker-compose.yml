@@ -126,8 +126,6 @@ services:
     hostname: $YARN_NODEMANAGE_HOSTNAME
     deploy:
       endpoint_mode: dnsrr
-      mode: replicated
-      replicas: 3
       placement:
         constraints:
           - node.role == worker
