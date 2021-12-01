@@ -182,4 +182,4 @@ services:
       - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
   
 volumes:
-  - spark-shuffle
+  spark-shuffle:
