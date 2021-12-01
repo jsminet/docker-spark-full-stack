@@ -46,8 +46,14 @@
   </property>
 
   <property>
+    <name>yarn.nodemanager.aux-services.spark_shuffle.classpath</name>
+    <value>${HADOOP_CONF_DIR}/spark-3.2.0-yarn-shuffle.jar</value>
+  </property>
+
+  <property>
     <name>yarn.nodemanager.aux-services.spark_shuffle.class</name>
     <value>org.apache.spark.network.yarn.YarnShuffleService</value>
   </property>
+
 
 </configuration>
