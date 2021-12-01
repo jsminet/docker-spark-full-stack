@@ -73,6 +73,7 @@ services:
     volumes:
       - "./app/kyuubi:/app/kyuubi"
       - "./drivers/mysql:/drivers/mysql"
+      - "spark-shuffle:/opt/apache-kyuubi-1.3.1-incubating-bin/externals/spark-3.2.0-bin-hadoop3.2/yarn"
 
   namenode:
     image: ${HADOOP_IMAGE}
@@ -179,3 +180,6 @@ services:
     hostname: zookeeper
     volumes: 
       - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
+  
+volumes:
+  - spark-shuffle
