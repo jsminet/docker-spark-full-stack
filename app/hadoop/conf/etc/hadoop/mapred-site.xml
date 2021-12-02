@@ -18,4 +18,15 @@
 
 <configuration>
 
+  <property>
+    <name>mapreduce.map.log.level</name>
+    <value>DEBUG</value>
+  </property>
+
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+
+
 </configuration>
