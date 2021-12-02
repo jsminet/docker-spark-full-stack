@@ -24,9 +24,13 @@
   </property>
 
   <property>
+    <name>mapreduce.reduce.log.level</name>
+    <value>DEBUG</value>
+  </property>
+
+  <property>
     <name>mapreduce.framework.name</name>
     <value>yarn</value>
   </property>
-
 
 </configuration>
