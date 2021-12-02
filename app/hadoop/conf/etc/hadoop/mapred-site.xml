@@ -48,4 +48,10 @@
     <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
   </property>
 
+  <property>
+    <name>yarn.app.mapreduce.am.command-opts</name>
+    <value>-DDFS_REPLICATION=3</value>
+  </property>
+  
+
 </configuration>
