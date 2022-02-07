@@ -18,7 +18,7 @@
 
 <configuration>
 
-  <property>
+  <!--property>
     <name>mapreduce.map.log.level</name>
     <value>DEBUG</value>
   </property>
@@ -51,7 +51,7 @@
   <property>
     <name>yarn.app.mapreduce.am.command-opts</name>
     <value>-DDFS_REPLICATION=3</value>
-  </property>
+  </property-->
   
 
 </configuration>
