@@ -16,31 +16,56 @@
 
   <!-- Site specific YARN configuration properties -->
   <property>
+    <description>The hostname of the RM.</description>
     <name>yarn.resourcemanager.hostname</name>
     <value>${YARN_RESOURCEMANAGER_HOSTNAME}</value>
   </property>
 
+  <!--property>
+    <description>The hostname of the NM.</description>
+    <name>yarn.nodemanager.hostname</name>
+    <value></value>
+  </property-->
+
   <property>
+    <description>Amount of physical memory, in MB, that can be allocated for containers. 
+      If set to -1 and yarn.nodemanager.resource.detect-hardware-capabilities is true, 
+      it is automatically calculated(in case of Windows and Linux). 
+      In other cases, the default is 8192MB. </description>
     <name>yarn.nodemanager.resource.memory-mb</name>
     <value>4096</value>
   </property>
 
   <property>
+    <description>	The maximum allocation for every container request at the RM in MBs. 
+      Memory requests higher than this will throw an InvalidResourceRequestException.</description>
     <name>yarn.scheduler.maximum-allocation-mb</name>
     <value>2048</value>
   </property>
 
   <property>
+    <description>The minimum allocation for every container request at the RM in MBs. 
+      Memory requests lower than this will be set to the value of this property. 
+      Additionally, a node manager that is configured to have less memory 
+      than this value will be shut down by the resource manager.</description>
     <name>yarn.scheduler.minimum-allocation-mb</name>
     <value>512</value>
   </property>
 
   <property>
+    <description>	Number of vcores that can be allocated for containers. 
+      This is used by the RM scheduler when allocating resources for containers. 
+      This is not used to limit the number of CPUs used by YARN containers. 
+      If it is set to -1 and yarn.nodemanager.resource.detect-hardware-capabilities is true, 
+      it is automatically determined from the hardware in case of Windows and Linux. 
+      In other cases, number of vcores is 8 by default.</description>
     <name>yarn.nodemanager.resource.cpu-vcores</name>
     <value>1</value>
   </property>
 
   <property>
+    <description>A comma separated list of services where service name should 
+      only contain a-zA-Z0-9_ and can not start with numbers</description>
     <name>yarn.nodemanager.aux-services</name>
     <value>spark_shuffle</value>
   </property>
