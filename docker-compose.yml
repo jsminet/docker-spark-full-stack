@@ -97,6 +97,7 @@ services:
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+      - "namenode_data:$DFS_NAMENODE_NAME_DIR"
 
   resourcemanager:
     image: ${HADOOP_IMAGE}
@@ -160,6 +161,7 @@ services:
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+      - "datanode_data:$DFS_DATANODE_NAME_DIR"
 
   hive-benchmark:
     image: jsminet/hive-benchmark:latest
@@ -179,3 +181,7 @@ services:
     hostname: zookeeper
     volumes: 
       - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
+
+volumes:
+  datanode_data:
+  namenode_data:
