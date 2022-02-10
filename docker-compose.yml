@@ -97,7 +97,7 @@ services:
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      - "./app/hadoop/data/namenode:$DFS_NAMENODE_NAME_DIR"
+      #- "./app/hadoop/data/namenode:$DFS_NAMENODE_NAME_DIR"
 
   resourcemanager:
     image: ${HADOOP_IMAGE}
@@ -161,7 +161,7 @@ services:
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      - "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
+      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
 
   hive-benchmark:
     image: jsminet/hive-benchmark:latest
