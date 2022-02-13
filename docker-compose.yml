@@ -10,6 +10,7 @@ services:
       - "8080:8080"
       - "3306:3306"
       - "10009:10009"
+      - "8020:8020"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -67,7 +68,7 @@ services:
         - "traefik.enable=true"
         - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
         - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
-        - "traefik.tcp.routers.kyuubi.service=kyuubi"
+        #- "traefik.tcp.routers.kyuubi.service=kyuubi"
         - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
     command: kyuubi
     volumes:
@@ -90,10 +91,10 @@ services:
           - "traefik.http.routers.namenode.entrypoints=web"
           - "traefik.http.routers.namenode.service=namenode"
           - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
-          - "traefik.tcp.routers.namenode2.rule=HostSNI(`*`)"
-          - "traefik.tcp.routers.namenode2.entrypoints=namenode2"
-          - "traefik.tcp.routers.namenode2.service=namenode2"
-          - "traefik.tcp.services.namenode2.loadbalancer.server.port=$DFS_NAMENODE_RPC_PORT"
+          - "traefik.tcp.routers.namenode.rule=HostSNI(`*`)"
+          - "traefik.tcp.routers.namenode.entrypoints=namenode"
+          #- "traefik.tcp.routers.namenode2.service=namenode2"
+          - "traefik.tcp.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_RPC_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
