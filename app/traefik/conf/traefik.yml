@@ -31,7 +31,7 @@ entryPoints:
     address: ":443"
   kyuubi:
     address: ":10009"
-  namenode2:
+  namenode:
     address: ":8020"
   mysql:
     address: ":3306"
