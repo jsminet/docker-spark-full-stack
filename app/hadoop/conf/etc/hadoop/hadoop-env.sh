@@ -227,7 +227,7 @@ export HADOOP_OS_TYPE=${HADOOP_OS_TYPE:-$(uname -s)}
 
 # Default log4j setting for interactive commands
 # Java property: hadoop.root.logger
-# export HADOOP_ROOT_LOGGER=INFO,console
+export HADOOP_ROOT_LOGGER=INFO,console
 
 # Default log4j setting for daemons spawned explicitly by
 # --daemon option of hadoop, hdfs, mapred and yarn command.

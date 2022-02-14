@@ -1,1 +1,0 @@
-Files from namenode master goes here

@@ -1,0 +1,1 @@
+Hadoop logs come here
