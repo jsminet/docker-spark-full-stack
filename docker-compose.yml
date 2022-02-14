@@ -158,12 +158,12 @@ services:
       placement:
         constraints:
           - node.role == worker
-        labels:
-          - "traefik.enable=true"
-          - "traefik.tcp.routers.datanode.rule=HostSNI(`*`)"
-          - "traefik.tcp.routers.datanode.entrypoints=datanode"
-          - "traefik.tcp.routers.kyuubi.service=kyuubi"
-          - "traefik.tcp.services.datanode.loadbalancer.server.port=9864"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tcp.routers.datanode.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.datanode.entrypoints=datanode"
+        - "traefik.tcp.routers.kyuubi.service=kyuubi"
+        - "traefik.tcp.services.datanode.loadbalancer.server.port=9864"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
