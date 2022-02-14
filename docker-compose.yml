@@ -154,7 +154,7 @@ services:
 
   datanode1:
     image: ${HADOOP_IMAGE}
-    hostname: datanode1
+    hostname: ${DATANODE1_DNS}
     deploy:
       placement:
         constraints:
@@ -180,7 +180,7 @@ services:
 
   datanode2:
     image: ${HADOOP_IMAGE}
-    hostname: datanode2
+    hostname: ${DATANODE2_DNS}
     deploy:
       placement:
         constraints:
@@ -206,7 +206,7 @@ services:
 
   datanode3:
     image: ${HADOOP_IMAGE}
-    hostname: datanode3
+    hostname: ${DATANODE3_DNS}
     deploy:
       placement:
         constraints:
