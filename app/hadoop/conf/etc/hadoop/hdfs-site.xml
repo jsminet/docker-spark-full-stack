@@ -45,7 +45,7 @@
 
         <property>
                 <name>dfs.namenode.rpc-bind-host</name>
-                <value>hadoop.rpi</value>
+                <value>namenode</value>
                 <description>
                   The actual address the RPC server will bind to. If this optional address is
                   set, it overrides only the hostname portion of dfs.namenode.rpc-address.
