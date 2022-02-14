@@ -11,6 +11,8 @@ services:
       - "3306:3306"
       - "10009:10009"
       - "8020:8020"
+      - "9864:9864"
+      - "9866:9866"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -150,20 +152,74 @@ services:
       - "./app/hadoop/conf/etc/hadoop:$YARN_CONF_DIR"
       - "./drivers/mysql:/drivers/mysql"
 
-  datanode:
+  datanode1:
     image: ${HADOOP_IMAGE}
+    hostname: datanode1
     deploy:
-      mode: replicated
-      replicas: 3
       placement:
         constraints:
           - node.role == worker
       labels:
         - "traefik.enable=true"
-        - "traefik.tcp.routers.datanode.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.datanode.entrypoints=datanode"
-        - "traefik.tcp.routers.kyuubi.service=kyuubi"
-        - "traefik.tcp.services.datanode.loadbalancer.server.port=9864"
+        - "traefik.http.routers.datanode1.rule=Host(`$DATANODE1_DNS`)"
+        - "traefik.http.routers.datanode1.entrypoints=web"
+        - "traefik.http.routers.datanode1.service=datanode1"
+        - "traefik.http.services.datanode1.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
+        - "traefik.tcp.routers.datanode1.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.datanode1.entrypoints=datanode"
+        - "traefik.tcp.services.datanode1.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
+    environment: 
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
+      - "DFS_REPLICATION=$DFS_REPLICATION"
+      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+    command: datanode
+    volumes: 
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
+
+  datanode2:
+    image: ${HADOOP_IMAGE}
+    hostname: datanode2
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.datanode2.rule=Host(`$DATANODE2_DNS`)"
+        - "traefik.http.routers.datanode2.entrypoints=web"
+        - "traefik.http.routers.datanode2.service=datanode2"
+        - "traefik.http.services.datanode2.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
+        - "traefik.tcp.routers.datanode2.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.datanode2.entrypoints=datanode"
+        - "traefik.tcp.services.datanode2.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
+    environment: 
+      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
+      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
+      - "DFS_REPLICATION=$DFS_REPLICATION"
+      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+    command: datanode
+    volumes: 
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
+
+  datanode3:
+    image: ${HADOOP_IMAGE}
+    hostname: datanode3
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.datanode3.rule=Host(`$DATANODE3_DNS`)"
+        - "traefik.http.routers.datanode3.entrypoints=web"
+        - "traefik.http.routers.datanode3.service=datanode3"
+        - "traefik.http.services.datanode3.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
+        - "traefik.tcp.routers.datanode3.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.datanode3.entrypoints=datanode"
+        - "traefik.tcp.services.datanode3.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
