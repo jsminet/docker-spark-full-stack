@@ -11,7 +11,6 @@ services:
       - "3306:3306"
       - "10009:10009"
       - "8020:8020"
-      - "9864:9864"
       - "9866:9866"
     volumes:
       # So that Traefik can listen to the Docker events
