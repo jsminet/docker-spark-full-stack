@@ -88,7 +88,7 @@ services:
           - node.role == manager
       labels:
           - "traefik.enable=true"
-          - "traefik.http.routers.namenode.rule=Host(`$HADOOP_DNS`)"
+          - "traefik.http.routers.namenode.rule=Host(`$NAMENODE_DNS`)"
           - "traefik.http.routers.namenode.entrypoints=web"
           - "traefik.http.routers.namenode.service=namenode"
           - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
