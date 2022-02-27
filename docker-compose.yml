@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   traefik:
-    image: traefik:v2.5
+    image: traefik:v2.6.1
     ports:
       # Exposes port 80 for incomming web requests
       - "80:80"
@@ -11,6 +11,7 @@ services:
       - "3306:3306"
       - "10009:10009"
       - "8020:8020"
+      - "8032:8032"
       - "9866:9866"
     volumes:
       # So that Traefik can listen to the Docker events
@@ -119,6 +120,9 @@ services:
           - "traefik.http.routers.resourcemanager.entrypoints=web"
           - "traefik.http.routers.resourcemanager.service=resourcemanager"
           - "traefik.http.services.resourcemanager.loadbalancer.server.port=$YARN_RESOURCEMANAGER_HTTP_PORT"
+          - "traefik.tcp.routers.resourcemanager.rule=HostSNI(`*`)"
+          - "traefik.tcp.routers.resourcemanager.entrypoints=resourcemanager"
+          - "traefik.tcp.services.resourcemanager.loadbalancer.server.port=$YARN_RESOURCEMANAGER_RPC_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
       - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
