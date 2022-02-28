@@ -76,6 +76,7 @@ services:
     volumes:
       - "./app/kyuubi:/app/kyuubi"
       - "./drivers/mysql:/drivers/mysql"
+      - "spark3:/opt/apache-kyuubi-1.4.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
   namenode:
     image: ${HADOOP_IMAGE}
@@ -233,21 +234,35 @@ services:
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
       #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
 
-  hive-benchmark:
-    image: jsminet/hive-benchmark:latest
-    build: https://github.com/jsminet/hive-benchmark.git#master
-    environment: 
-      - "KYUUBI_MASTER_HOST=kyuubi"
-      - "KYUUBI_FRONTEND_BIND_PORT=$KYUUBI_FRONTEND_BIND_PORT"
-      - "DFS_REPLICATION=$DFS_REPLICATION"
-      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
-      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
-      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
-    volumes: 
-      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+  zeppelin:
+    image: apache/zeppelin:0.10.1
+    environment:
+      - "SPARK_MASTER=yarn"
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "SPARK_HOME=/opt/spark"
+      - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
+      - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
+      - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
+    deploy:
+        placement:
+          constraints:
+            - node.role == manager
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.zeppelin.rule=Host(`$ZEPPELIN_DNS`)"
+          - "traefik.http.routers.zeppelin.entrypoints=web"
+          - "traefik.http.routers.zeppelin.service=zeppelin"
+          - "traefik.http.services.zeppelin.loadbalancer.server.port=8080"
+    volumes:
+      - "./app/zeppelin:/app/zeppelin"
+      - "./app/kyuubi:/app/kyuubi"
+      - "spark3:/opt/spark"
 
   zookeeper:
     image: zookeeper:latest
     hostname: zookeeper
     volumes: 
       - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
+
+volumes: 
+  spark3:
