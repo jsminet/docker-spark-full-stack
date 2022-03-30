@@ -16,6 +16,7 @@ services:
 
   kyuubi:
     image: ${SPARK_IMAGE}
+    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.0-incubating
     hostname: kyuubi
     environment:
       - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
@@ -27,7 +28,6 @@ services:
       - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
       - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
       - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
-    command: master
     volumes:
       - "./app/kyuubi:/app/kyuubi"
       - "./drivers/mysql:/drivers/mysql"

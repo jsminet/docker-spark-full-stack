@@ -240,30 +240,6 @@ services:
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
       #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
 
-  zeppelin:
-    image: apache/zeppelin:0.10.1
-    environment:
-      - "SPARK_MASTER=yarn"
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
-      - "SPARK_HOME=/opt/spark"
-      - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
-      - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
-      - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
-    deploy:
-        placement:
-          constraints:
-            - node.role == manager
-        labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.zeppelin.rule=Host(`$ZEPPELIN_DNS`)"
-          - "traefik.http.routers.zeppelin.entrypoints=web"
-          - "traefik.http.routers.zeppelin.service=zeppelin"
-          - "traefik.http.services.zeppelin.loadbalancer.server.port=8080"
-    volumes:
-      - "./app/zeppelin:/app/zeppelin"
-      - "./app/kyuubi:/app/kyuubi"
-      - "spark3:/opt/spark"
-
   zookeeper:
     image: zookeeper:latest
     hostname: zookeeper
