@@ -1,0 +1,57 @@
+version: '3.7'
+
+services:
+  traefik:
+    image: traefik:v2.6.2
+    ports:
+      # Exposes port 80 for incomming web requests
+      - "80:80"
+      # The Web UI port http://0.0.0.0:8080 (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Duplicate traefik config for non swarm docker compose
+      - ./app/traefik/conf/traefik-client.yml:/etc/traefik/traefik.yml
+
+  kyuubi:
+    image: ${SPARK_IMAGE}
+    hostname: kyuubi
+    environment:
+      - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "KYUUBI_WORK_DIR_ROOT=$KYUUBI_WORK_DIR_ROOT"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
+      - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
+    command: master
+    volumes:
+      - "./app/kyuubi:/app/kyuubi"
+      - "./drivers/mysql:/drivers/mysql"
+      - "spark3:/opt/apache-kyuubi-1.5.0-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
+
+  zeppelin:
+    image: apache/zeppelin:0.10.1
+    environment:
+      - "SPARK_MASTER=yarn"
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "SPARK_HOME=/opt/spark"
+      - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
+      - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
+      - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.zeppelin.rule=Host(`$ZEPPELIN_DNS`)"
+      - "traefik.http.routers.zeppelin.entrypoints=web"
+      - "traefik.http.routers.zeppelin.service=zeppelin"
+      - "traefik.http.services.zeppelin.loadbalancer.server.port=$ZEPPELIN_HTTP_PORT"
+    volumes:
+      - "./app/zeppelin:/app/zeppelin"
+      - "./app/kyuubi:/app/kyuubi"
+      - "spark3:/opt/spark"
+
+volumes: 
+  spark3:
