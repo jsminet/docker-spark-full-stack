@@ -16,7 +16,7 @@ This swarm stack is fully compatible with raspberry PI, base images are also bui
 
 Here is the visualizer result using 3 raspberry PI cluster
 
-![Final result](images\image01.png)
+![Final result](images/image01.png)
 
 ### Scale spark worker
 
