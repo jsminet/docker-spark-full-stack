@@ -16,25 +16,30 @@ services:
 
   kyuubi:
     image: ${SPARK_IMAGE}
-    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.0-incubating
+    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.1-incubating
     hostname: kyuubi
     environment:
       - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
       - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
       - "KYUUBI_WORK_DIR_ROOT=$KYUUBI_WORK_DIR_ROOT"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
-      - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
+    deploy:
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
+        - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
     volumes:
       - "./app/kyuubi:/app/kyuubi"
       - "./drivers/mysql:/drivers/mysql"
-      - "spark3:/opt/apache-kyuubi-1.5.0-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
+      - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
   zeppelin:
-    image: apache/zeppelin:0.10.1
+    image: apache/zeppelin:0.10.0
     environment:
       - "SPARK_MASTER=yarn"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
@@ -42,12 +47,17 @@ services:
       - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
       - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
       - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.zeppelin.rule=Host(`$ZEPPELIN_DNS`)"
-      - "traefik.http.routers.zeppelin.entrypoints=web"
-      - "traefik.http.routers.zeppelin.service=zeppelin"
-      - "traefik.http.services.zeppelin.loadbalancer.server.port=$ZEPPELIN_HTTP_PORT"
+    deploy:
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.zeppelin.rule=Host(`$ZEPPELIN_DNS`)"
+        - "traefik.http.routers.zeppelin.entrypoints=web"
+        - "traefik.http.routers.zeppelin.service=zeppelin"
+        - "traefik.http.services.zeppelin.loadbalancer.server.port=$ZEPPELIN_HTTP_PORT"
     volumes:
       - "./app/zeppelin:/app/zeppelin"
       - "./app/kyuubi:/app/kyuubi"

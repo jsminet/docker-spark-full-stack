@@ -55,7 +55,7 @@ services:
 
   kyuubi:
     image: ${SPARK_IMAGE}
-    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.0-incubating
+    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.1-incubating
     hostname: kyuubi
     environment:
       - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
@@ -77,7 +77,7 @@ services:
     volumes:
       - "./app/kyuubi:/app/kyuubi"
       - "./drivers/mysql:/drivers/mysql"
-      - "spark3:/opt/apache-kyuubi-1.5.0-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
+      - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
   namenode:
     image: ${HADOOP_IMAGE}
