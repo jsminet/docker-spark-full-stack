@@ -81,7 +81,7 @@ services:
 
   namenode:
     image: ${HADOOP_IMAGE}
-    build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
+    build: ${HADOOP_GIT_URL}
     # We set labels to tell Traefik to assign a hostname to the new service
     hostname: namenode
     deploy:
@@ -110,7 +110,7 @@ services:
 
   resourcemanager:
     image: ${HADOOP_IMAGE}
-    build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
+    build: ${HADOOP_GIT_URL}
     hostname: $YARN_RESOURCEMANAGER_HOSTNAME
     deploy:
       endpoint_mode: dnsrr
@@ -137,7 +137,7 @@ services:
 
   nodemanager:
     image: ${HADOOP_IMAGE}
-    build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
+    build: ${HADOOP_GIT_URL}
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -161,7 +161,7 @@ services:
 
   datanode1:
     image: ${HADOOP_IMAGE}
-    build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
+    build: ${HADOOP_GIT_URL}
     hostname: ${DATANODE1_DNS}
     deploy:
       placement:
@@ -188,7 +188,7 @@ services:
 
   datanode2:
     image: ${HADOOP_IMAGE}
-    build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
+    build: ${HADOOP_GIT_URL}
     hostname: ${DATANODE2_DNS}
     deploy:
       placement:
@@ -215,7 +215,7 @@ services:
 
   datanode3:
     image: ${HADOOP_IMAGE}
-    build: https://github.com/jsminet/docker-apache-hadoop.git#3.2.2
+    build: ${HADOOP_GIT_URL}
     hostname: ${DATANODE3_DNS}
     deploy:
       placement:

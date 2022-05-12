@@ -39,7 +39,7 @@ services:
       - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
   zeppelin:
-    image: apache/zeppelin:0.10.0
+    image: apache/zeppelin:0.10.1
     environment:
       - "SPARK_MASTER=yarn"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
