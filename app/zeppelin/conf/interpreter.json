@@ -623,10 +623,12 @@
       "option": {
         "remote": true,
         "port": -1,
+        "perNote": "shared",
+        "perUser": "isolated",
         "isExistingProcess": false,
         "setPermission": false,
         "owners": [],
-        "isUserImpersonate": false
+        "isUserImpersonate": true
       }
     },
     "elasticsearch": {
@@ -994,25 +996,25 @@
       "properties": {
         "SPARK_HOME": {
           "name": "SPARK_HOME",
-          "value": "",
+          "value": "/opt/spark",
           "type": "string",
           "description": "Location of spark distribution"
         },
         "spark.master": {
           "name": "spark.master",
-          "value": "spark://spark-master:7077",
+          "value": "yarn",
           "type": "string",
           "description": "Spark master uri. local | yarn-client | yarn-cluster | spark master address of standalone mode, ex) spark://master_host:7077"
         },
         "spark.submit.deployMode": {
           "name": "spark.submit.deployMode",
-          "value": "client",
+          "value": "cluster",
           "type": "string",
           "description": "The deploy mode of Spark driver program, either \"client\" or \"cluster\", Which means to launch driver program locally (\"client\") or remotely (\"cluster\") on one of the nodes inside the cluster."
         },
         "spark.app.name": {
           "name": "spark.app.name",
-          "value": "Zeppelin on standalone",
+          "value": "Zeppelin",
           "type": "string",
           "description": "The name of spark application."
         },
@@ -1196,7 +1198,7 @@
           "type": "number"
         }
       },
-      "status": "DOWNLOADING_DEPENDENCIES",
+      "status": "READY",
       "interpreterGroup": [
         {
           "name": "spark",
@@ -1296,12 +1298,12 @@
       "option": {
         "remote": true,
         "port": -1,
-        "perNote": "isolated",
-        "perUser": "",
+        "perNote": "shared",
+        "perUser": "isolated",
         "isExistingProcess": false,
         "setPermission": false,
         "owners": [],
-        "isUserImpersonate": false
+        "isUserImpersonate": true
       }
     },
     "sh": {
