@@ -444,7 +444,7 @@
         },
         "SPARK_MASTER": {
           "name": "SPARK_MASTER",
-          "value": "spark://spark-master:7077",
+          "value": "spark://sparkmaster:7077",
           "type": "string",
           "description": "local | yarn-client"
         },
