@@ -444,7 +444,7 @@
         },
         "SPARK_MASTER": {
           "name": "SPARK_MASTER",
-          "value": "spark://sparkmaster:7077",
+          "value": "spark://spark-master:7077",
           "type": "string",
           "description": "local | yarn-client"
         },
@@ -1002,7 +1002,7 @@
         },
         "spark.master": {
           "name": "spark.master",
-          "value": "yarn",
+          "value": "spark://spark:7077",
           "type": "string",
           "description": "Spark master uri. local | yarn-client | yarn-cluster | spark master address of standalone mode, ex) spark://master_host:7077"
         },
@@ -1198,7 +1198,7 @@
           "type": "number"
         }
       },
-      "status": "READY",
+      "status": "DOWNLOADING_DEPENDENCIES",
       "interpreterGroup": [
         {
           "name": "spark",
