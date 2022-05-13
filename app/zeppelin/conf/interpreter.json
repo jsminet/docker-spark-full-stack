@@ -1008,7 +1008,7 @@
         },
         "spark.submit.deployMode": {
           "name": "spark.submit.deployMode",
-          "value": "cluster",
+          "value": "client",
           "type": "string",
           "description": "The deploy mode of Spark driver program, either \"client\" or \"cluster\", Which means to launch driver program locally (\"client\") or remotely (\"cluster\") on one of the nodes inside the cluster."
         },
