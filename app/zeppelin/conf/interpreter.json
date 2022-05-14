@@ -588,10 +588,12 @@
       "option": {
         "remote": true,
         "port": -1,
+        "perNote": "shared",
+        "perUser": "isolated",
         "isExistingProcess": false,
         "setPermission": false,
         "owners": [],
-        "isUserImpersonate": false
+        "isUserImpersonate": true
       }
     },
     "spark-submit": {
@@ -1198,7 +1200,7 @@
           "type": "number"
         }
       },
-      "status": "DOWNLOADING_DEPENDENCIES",
+      "status": "READY",
       "interpreterGroup": [
         {
           "name": "spark",

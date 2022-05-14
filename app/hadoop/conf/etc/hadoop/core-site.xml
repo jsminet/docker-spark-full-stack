@@ -38,6 +38,19 @@
   </property>
 
   <property>
+    <name>hadoop.proxyuser.zeppelin.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.zeppelin.groups</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.zeppelin.users</name>
+    <value>*</value>
+  </property>
+  
+  <property>
     <description>
             A comma separated list of hostname:port pairs defining the
             zookeeper quorum binding for the registry
