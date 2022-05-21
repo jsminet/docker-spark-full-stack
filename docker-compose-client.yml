@@ -40,6 +40,7 @@ services:
 
   zeppelin:
     image: apache/zeppelin:0.10.1
+    hostname: zeppelin
     environment:
       - "SPARK_MASTER=yarn"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
