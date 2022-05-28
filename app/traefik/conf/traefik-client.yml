@@ -29,3 +29,7 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
+  sparkdriver:
+    address: ":40000"
+  sparkblockmanager:
+    address: ":41000"

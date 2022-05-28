@@ -1198,6 +1198,21 @@
           "name": "spark.cores.max",
           "value": "2",
           "type": "number"
+        },
+        "spark.driver.port": {
+          "name": "spark.driver.port",
+          "value": "40000",
+          "type": "textarea"
+        },
+        "spark.blockManager.port": {
+          "name": "spark.blockManager.port",
+          "value": "41000",
+          "type": "textarea"
+        },
+        "spark.port.maxRetries": {
+          "name": "spark.port.maxRetries",
+          "value": "16",
+          "type": "textarea"
         }
       },
       "status": "READY",

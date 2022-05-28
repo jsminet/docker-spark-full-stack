@@ -28,11 +28,6 @@ services:
       placement:
         constraints:
           - node.role == manager
-      labels:
-        - "traefik.enable=true"
-        - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
-        - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
     volumes:
       - "./app/kyuubi:/app/kyuubi"
       - "./drivers/mysql:/drivers/mysql"
@@ -42,7 +37,7 @@ services:
     image: apache/zeppelin:0.10.1
     hostname: zeppelin
     environment:
-      - "SPARK_MASTER=yarn"
+      - "SPARK_MASTER=spark://sparkmaster:7077"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
       - "SPARK_HOME=/opt/spark"
       - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
@@ -59,6 +54,11 @@ services:
         - "traefik.http.routers.zeppelin.entrypoints=web"
         - "traefik.http.routers.zeppelin.service=zeppelin"
         - "traefik.http.services.zeppelin.loadbalancer.server.port=$ZEPPELIN_HTTP_PORT"
+        - "traefik.tcp.routers.zeppelin.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.zeppelin.entrypoints=sparkdriver"
+        - "traefik.tcp.services.zeppelin.loadbalancer.server.port=$SPARK_DRIVER_PORT"
+        - "traefik.tcp.routers.zeppelin.entrypoints=sparkblockmanager"
+        - "traefik.tcp.services.zeppelin.loadbalancer.server.port=$SPARK_BLOCKMANAGER_PORT"
     volumes:
       - "./app/zeppelin:/app/zeppelin"
       - "./app/kyuubi:/app/kyuubi"
