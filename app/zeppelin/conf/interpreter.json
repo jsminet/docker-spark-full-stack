@@ -1196,7 +1196,7 @@
         },
         "spark.cores.max": {
           "name": "spark.cores.max",
-          "value": "2",
+          "value": "3",
           "type": "number"
         },
         "spark.driver.port": {
@@ -1212,6 +1212,36 @@
         "spark.port.maxRetries": {
           "name": "spark.port.maxRetries",
           "value": "16",
+          "type": "textarea"
+        },
+        "spark.hadoop.fs.defaultFS": {
+          "name": "spark.hadoop.fs.defaultFS",
+          "value": "hdfs://namenode:8020",
+          "type": "textarea"
+        },
+        "spark.sql.warehouse.dir": {
+          "name": "spark.sql.warehouse.dir",
+          "value": "/user/hive/warehouse",
+          "type": "textarea"
+        },
+        "spark.hadoop.javax.jdo.option.ConnectionDriverName": {
+          "name": "spark.hadoop.javax.jdo.option.ConnectionDriverName",
+          "value": "com.mysql.jdbc.Driver",
+          "type": "textarea"
+        },
+        "spark.hadoop.javax.jdo.option.ConnectionURL": {
+          "name": "spark.hadoop.javax.jdo.option.ConnectionURL",
+          "value": "jdbc:mysql://mysql-hive:3306/hive?autoReconnect\u003dtrue\u0026useSSL\u003dfalse",
+          "type": "textarea"
+        },
+        "javax.jdo.option.ConnectionUserName": {
+          "name": "javax.jdo.option.ConnectionUserName",
+          "value": "root",
+          "type": "textarea"
+        },
+        "javax.jdo.option.ConnectionPassword": {
+          "name": "javax.jdo.option.ConnectionPassword",
+          "value": "secret",
           "type": "textarea"
         }
       },
