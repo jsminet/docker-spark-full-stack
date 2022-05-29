@@ -10,7 +10,6 @@ services:
       - "8080:8080"
       - "3306:3306"
       - "10009:10009"
-      - "7077:7077"
       - "8020:8020"
       - "8032:8032"
       - "9866:9866"
@@ -46,6 +45,10 @@ services:
     environment: 
       - "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"
     deploy:
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         - "traefik.enable=true"
         - "traefik.tcp.services.mysql-hive.loadbalancer.server.port=3306"
@@ -108,10 +111,9 @@ services:
       - "./drivers/mysql:/drivers/mysql"
       - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
-  sparkworker1:
+  sparkworker:
     image: ${SPARK_IMAGE}
     build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.1-incubating
-    hostname: sparkworker1
     environment:
       - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
       - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
@@ -122,70 +124,11 @@ services:
       placement:
         constraints:
           - node.role == worker
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.sparkworker1.rule=Host(`$SPARK_WORKER1_DNS`)"
-        - "traefik.http.routers.sparkworker1.entrypoints=web"
-        - "traefik.http.routers.sparkworker1.service=sparkworker1"
-        - "traefik.http.services.sparkworker1.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
       - "./app/spark:/app/spark"
       - "./drivers/mysql:/drivers/mysql"
       - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
-
-  sparkworker2:
-    image: ${SPARK_IMAGE}
-    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.1-incubating
-    hostname: sparkworker2
-    environment:
-      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
-      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
-      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role == worker
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.sparkworker2.rule=Host(`$SPARK_WORKER2_DNS`)"
-        - "traefik.http.routers.sparkworker2.entrypoints=web"
-        - "traefik.http.routers.sparkworker2.service=sparkworker2"
-        - "traefik.http.services.sparkworker2.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
-    command: worker spark://sparkmaster:$SPARK_MASTER_PORT
-    volumes:
-      - "./app/spark:/app/spark"
-      - "./drivers/mysql:/drivers/mysql"
-      - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
-
-  sparkworker3:
-    image: ${SPARK_IMAGE}
-    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.1-incubating
-    hostname: sparkworker3
-    environment:
-      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
-      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
-      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role == worker
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.sparkworker3.rule=Host(`$SPARK_WORKER3_DNS`)"
-        - "traefik.http.routers.sparkworker3.entrypoints=web"
-        - "traefik.http.routers.sparkworker3.service=sparkworker3"
-        - "traefik.http.services.sparkworker3.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
-    command: worker spark://sparkmaster:$SPARK_MASTER_PORT
-    volumes:
-      - "./app/spark:/app/spark"
-      - "./drivers/mysql:/drivers/mysql"
-      - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
-
 
   namenode:
     image: ${HADOOP_IMAGE}
