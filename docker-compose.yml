@@ -120,6 +120,8 @@ services:
       - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
     deploy:
+      mode: replicated
+      replicas: 3
       endpoint_mode: dnsrr
       placement:
         constraints:
@@ -246,7 +248,7 @@ services:
       - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
 
   zeppelin:
-    image: apache/zeppelin:0.10.1
+    image: zeppelin:latest
     hostname: zeppelin
     environment:
       - "SPARK_MASTER=spark://sparkmaster:7077"
