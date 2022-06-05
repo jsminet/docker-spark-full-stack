@@ -75,7 +75,6 @@ services:
         - "traefik.enable=true"
         - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
         - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
-        #- "traefik.tcp.routers.kyuubi.service=kyuubi"
         - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
     command: kyuubi
     volumes:
@@ -103,9 +102,6 @@ services:
         - "traefik.http.routers.sparkmaster.entrypoints=web"
         - "traefik.http.routers.sparkmaster.service=sparkmaster"
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
-        - "traefik.tcp.routers.sparkmaster.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.sparkmaster.entrypoints=sparkmaster"
-        - "traefik.tcp.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_PORT"
     volumes:
       - "./app/spark:/app/spark"
       - "./drivers/mysql:/drivers/mysql"
