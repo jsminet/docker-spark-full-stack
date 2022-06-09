@@ -264,6 +264,10 @@ services:
         - "traefik.http.routers.zeppelin.entrypoints=web"
         - "traefik.http.routers.zeppelin.service=zeppelin"
         - "traefik.http.services.zeppelin.loadbalancer.server.port=$ZEPPELIN_HTTP_PORT"
+        - "traefik.http.routers.zeppelin2.rule=Host(`$ZEPPELIN_SPARKUI_DNS`)"
+        - "traefik.http.routers.zeppelin2.entrypoints=web"
+        - "traefik.http.routers.zeppelin2.service=zeppelin2"
+        - "traefik.http.services.zeppelin2.loadbalancer.server.port=$SPARK_UI_PORT"
     volumes:
       - "./app/zeppelin:/app/zeppelin"
       - "./app/kyuubi:/app/kyuubi"
