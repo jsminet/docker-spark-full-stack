@@ -1199,19 +1199,9 @@
           "value": "3",
           "type": "number"
         },
-        "spark.driver.port": {
-          "name": "spark.driver.port",
-          "value": "40000",
-          "type": "textarea"
-        },
-        "spark.blockManager.port": {
-          "name": "spark.blockManager.port",
-          "value": "41000",
-          "type": "textarea"
-        },
-        "spark.port.maxRetries": {
-          "name": "spark.port.maxRetries",
-          "value": "16",
+        "spark.sql.shuffle.partitions": {
+          "name": "spark.sql.shuffle.partitions",
+          "value": "10",
           "type": "textarea"
         },
         "spark.hadoop.fs.defaultFS": {
