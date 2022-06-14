@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.8"
 
 services:
   traefik:
@@ -45,6 +45,10 @@ services:
     environment: 
       - "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"
     deploy:
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         - "traefik.enable=true"
         - "traefik.tcp.services.mysql-hive.loadbalancer.server.port=3306"
@@ -71,11 +75,56 @@ services:
         - "traefik.enable=true"
         - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
         - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
-        #- "traefik.tcp.routers.kyuubi.service=kyuubi"
         - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
     command: kyuubi
     volumes:
       - "./app/kyuubi:/app/kyuubi"
+      - "./drivers/mysql:/drivers/mysql"
+      - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
+
+  sparkmaster:
+    image: ${SPARK_IMAGE}
+    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.1-incubating
+    hostname: sparkmaster
+    environment:
+      - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
+      - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
+      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+    deploy:
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.sparkmaster.rule=Host(`$SPARK_MASTER_DNS`)"
+        - "traefik.http.routers.sparkmaster.entrypoints=web"
+        - "traefik.http.routers.sparkmaster.service=sparkmaster"
+        - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
+    volumes:
+      - "./app/spark:/app/spark"
+      - "./drivers/mysql:/drivers/mysql"
+      - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
+
+  sparkworker:
+    image: ${SPARK_IMAGE}
+    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.1-incubating
+    environment:
+      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
+      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
+      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+    deploy:
+      mode: replicated
+      replicas: 3
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == worker
+    command: worker spark://sparkmaster:$SPARK_MASTER_PORT
+    volumes:
+      - "./app/spark:/app/spark"
       - "./drivers/mysql:/drivers/mysql"
       - "spark3:/opt/apache-kyuubi-1.5.1-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
@@ -97,7 +146,6 @@ services:
           - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
           - "traefik.tcp.routers.namenode.rule=HostSNI(`*`)"
           - "traefik.tcp.routers.namenode.entrypoints=namenode"
-          #- "traefik.tcp.routers.namenode2.service=namenode2"
           - "traefik.tcp.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_RPC_PORT"
     environment: 
       - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
@@ -107,57 +155,6 @@ services:
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
       #- "./app/hadoop/data/namenode:$DFS_NAMENODE_NAME_DIR"
-
-  resourcemanager:
-    image: ${HADOOP_IMAGE}
-    build: ${HADOOP_GIT_URL}
-    hostname: $YARN_RESOURCEMANAGER_HOSTNAME
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.resourcemanager.rule=Host(`$RESOURCEMANAGER_DNS`)"
-          - "traefik.http.routers.resourcemanager.entrypoints=web"
-          - "traefik.http.routers.resourcemanager.service=resourcemanager"
-          - "traefik.http.services.resourcemanager.loadbalancer.server.port=$YARN_RESOURCEMANAGER_HTTP_PORT"
-          - "traefik.tcp.routers.resourcemanager.rule=HostSNI(`*`)"
-          - "traefik.tcp.routers.resourcemanager.entrypoints=resourcemanager"
-          - "traefik.tcp.services.resourcemanager.loadbalancer.server.port=$YARN_RESOURCEMANAGER_RPC_PORT"
-    environment: 
-      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
-      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
-      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
-      - "YARN_CONF_DIR=$YARN_CONF_DIR"
-    command: resourcemanager
-    volumes: 
-      - "./app/hadoop/conf/etc/hadoop:$YARN_CONF_DIR"
-
-  nodemanager:
-    image: ${HADOOP_IMAGE}
-    build: ${HADOOP_GIT_URL}
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role == worker
-      labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.nodemanager.rule=Host(`$NODEMANAGER_DNS`)"
-          - "traefik.http.routers.nodemanager.entrypoints=web"
-          - "traefik.http.routers.nodemanager.service=nodemanager"
-          - "traefik.http.services.nodemanager.loadbalancer.server.port=$YARN_NODEMANAGER_HTTP_PORT"
-    environment: 
-      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
-      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
-      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
-      - "YARN_CONF_DIR=$YARN_CONF_DIR"
-    command: nodemanager
-    volumes: 
-      - "./app/hadoop/conf/etc/hadoop:$YARN_CONF_DIR"
-      - "./drivers/mysql:/drivers/mysql"
 
   datanode1:
     image: ${HADOOP_IMAGE}
@@ -245,6 +242,36 @@ services:
     hostname: zookeeper
     volumes: 
       - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
+
+  zeppelin:
+    image: zeppelin:latest
+    hostname: zeppelin
+    environment:
+      - "SPARK_MASTER=spark://sparkmaster:7077"
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+      - "SPARK_HOME=/opt/spark"
+      - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
+      - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
+      - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
+    deploy:
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.zeppelin.rule=Host(`$ZEPPELIN_DNS`)"
+        - "traefik.http.routers.zeppelin.entrypoints=web"
+        - "traefik.http.routers.zeppelin.service=zeppelin"
+        - "traefik.http.services.zeppelin.loadbalancer.server.port=$ZEPPELIN_HTTP_PORT"
+        - "traefik.http.routers.zeppelin2.rule=Host(`$ZEPPELIN_SPARKUI_DNS`)"
+        - "traefik.http.routers.zeppelin2.entrypoints=web"
+        - "traefik.http.routers.zeppelin2.service=zeppelin2"
+        - "traefik.http.services.zeppelin2.loadbalancer.server.port=$SPARK_UI_PORT"
+    volumes:
+      - "./app/zeppelin:/app/zeppelin"
+      - "./app/kyuubi:/app/kyuubi"
+      - "spark3:/opt/spark"
 
 volumes: 
   spark3:

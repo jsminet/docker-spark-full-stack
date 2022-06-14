@@ -35,7 +35,5 @@ entryPoints:
     address: ":8020"
   datanode:
     address: ":9866"
-  resourcemanager:
-    address: ":8032"
   mysql:
     address: ":3306"
