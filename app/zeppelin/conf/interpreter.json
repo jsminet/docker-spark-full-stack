@@ -1058,7 +1058,7 @@
         },
         "spark.jars": {
           "name": "spark.jars",
-          "value": "local:///drivers/mysql/mysql-connector-java-5.1.49.jar",
+          "value": "local:///jars/drivers/mysql/mysql-connector-java-5.1.49.jar",
           "type": "string",
           "description": "Comma-separated list of jars to include on the driver and executor classpaths. Globs are allowed."
         },

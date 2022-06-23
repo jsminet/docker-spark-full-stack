@@ -22,9 +22,9 @@ spark.sql.warehouse.dir                            hdfs://namenode:8020/user/roo
 #spark.hadoop.javax.jdo.option.ConnectionUserName   root
 #spark.hadoop.javax.jdo.option.ConnectionPassword   secret
 spark.cores.max                                    1
-#spark.jars                                         local:///drivers/mysql/mysql-connector-java-5.1.49.jar
-#spark.driver.extraClassPath                        local:///drivers/mysql/*
-#spark.executor.extraClassPath                      local:///drivers/mysql/*
+#spark.jars                                         local:///jars/drivers/mysql/mysql-connector-java-5.1.49.jar
+#spark.driver.extraClassPath                        local:///jars/drivers/mysql/*
+#spark.executor.extraClassPath                      local:///jars/drivers/mysql/*
 
 
 ## Kyuubi Configurations
