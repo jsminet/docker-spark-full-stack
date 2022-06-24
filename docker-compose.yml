@@ -79,7 +79,7 @@ services:
     command: kyuubi
     volumes:
       - "./app/kyuubi:/app/kyuubi"
-      - "./drivers/mysql:/drivers/mysql"
+      - "./jars/drivers/mysql:/drivers/mysql"
       - "spark3:/opt/apache-kyuubi-1.5.2-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
   sparkmaster:
@@ -104,7 +104,7 @@ services:
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     volumes:
       - "./app/spark:/app/spark"
-      - "./drivers/mysql:/drivers/mysql"
+      - "./jars/drivers/mysql:/drivers/mysql"
       - "spark3:/opt/apache-kyuubi-1.5.2-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
   sparkworker:
@@ -125,7 +125,7 @@ services:
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
       - "./app/spark:/app/spark"
-      - "./drivers/mysql:/drivers/mysql"
+      - "./jars/drivers/mysql:/drivers/mysql"
       - "spark3:/opt/apache-kyuubi-1.5.2-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
 
   namenode:
