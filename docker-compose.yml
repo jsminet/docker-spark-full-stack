@@ -110,6 +110,7 @@ services:
   sparkworker:
     image: ${SPARK_IMAGE}
     build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.5.2-incubating
+    hostname: "sparkworker{{.Task.Slot}}"
     environment:
       - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
       - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
@@ -122,6 +123,12 @@ services:
       placement:
         constraints:
           - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.sparkworker.rule=Host(`sparkworker{{.Task.Slot}}`)"
+        - "traefik.http.routers.sparkworker.entrypoints=web"
+        - "traefik.http.routers.sparkworker.service=sparkworker"
+        - "traefik.http.services.sparkworker.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
       - "./app/spark:/app/spark"
