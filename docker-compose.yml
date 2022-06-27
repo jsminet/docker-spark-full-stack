@@ -125,15 +125,9 @@ services:
           - node.role == worker
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.sparkworker1.rule=Host(`SPARK_WORKER1_DNS`)"
-        - "traefik.http.routers.sparkworker1.entrypoints=web"
-        - "traefik.http.routers.sparkworker1.service=sparkworker"
-        - "traefik.http.routers.sparkworker2.rule=Host(`SPARK_WORKER2_DNS`)"
-        - "traefik.http.routers.sparkworker2.entrypoints=web"
-        - "traefik.http.routers.sparkworker2.service=sparkworker"
-        - "traefik.http.routers.sparkworker3.rule=Host(`SPARK_WORKER3_DNS`)"
-        - "traefik.http.routers.sparkworker3.entrypoints=web"
-        - "traefik.http.routers.sparkworker3.service=sparkworker"
+        - "traefik.http.routers.sparkworker.rule=Host(`$SPARK_WORKER_DNS`)"
+        - "traefik.http.routers.sparkworker.entrypoints=web"
+        - "traefik.http.routers.sparkworker.service=sparkworker"
         - "traefik.http.services.sparkworker.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
