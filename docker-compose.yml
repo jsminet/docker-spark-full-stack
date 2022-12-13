@@ -2,17 +2,17 @@ version: "3.8"
 
 services:
   traefik:
-    image: traefik:v2.6.2
+    image: traefik:v2.9.6
     ports:
       # Exposes port 80 for incomming web requests
-      - "80:80"
+      - 80:80
       # The Web UI port http://0.0.0.0:8080 (enabled by --api.insecure=true)
-      - "8080:8080"
-      - "3306:3306"
-      - "10009:10009"
-      - "8020:8020"
-      - "8032:8032"
-      - "9866:9866"
+      - 8080:8080
+      - 3306:3306
+      - 10009:10009
+      - 8020:8020
+      - 8032:8032
+      - 9866:9866
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -59,7 +59,7 @@ services:
 
   kyuubi:
     image: ${SPARK_IMAGE}
-    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.6.0-incubating
+    build: $KYUUBI_GIT_URL
     hostname: kyuubi
     environment:
       - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
@@ -80,12 +80,12 @@ services:
     volumes:
       - "./app/kyuubi:/app/kyuubi"
       - "./jars/drivers/mysql:/jars/drivers/mysql"
-      - "spark3:/opt/apache-kyuubi-1.6.0-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
+      - "spark3:$KYUUBI_SPARK_HOME"
 
   sparkmaster:
     image: ${SPARK_IMAGE}
-    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.6.0-incubating
-    hostname: sparkmaster
+    build: $KYUUBI_GIT_URL
+    hostname: ${SPARK_MASTER_DNS}
     environment:
       - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
       - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
@@ -105,11 +105,11 @@ services:
     volumes:
       - "./app/spark:/app/spark"
       - "./jars/drivers/mysql:/jars/drivers/mysql"
-      - "spark3:/opt/apache-kyuubi-1.6.0-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
+      - "spark3:$KYUUBI_SPARK_HOME"
 
   sparkworker:
     image: ${SPARK_IMAGE}
-    build: https://github.com/jsminet/docker-apache-spark.git#kyuubi-1.6.0-incubating
+    build: $KYUUBI_GIT_URL
     hostname: "sparkworker{{.Task.Slot}}"
     environment:
       - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
@@ -133,13 +133,13 @@ services:
     volumes:
       - "./app/spark:/app/spark"
       - "./jars/drivers/mysql:/jars/drivers/mysql"
-      - "spark3:/opt/apache-kyuubi-1.6.0-incubating-bin/externals/spark-3.2.1-bin-hadoop3.2"
+      - "spark3:$KYUUBI_SPARK_HOME"
 
   namenode:
     image: ${HADOOP_IMAGE}
     build: ${HADOOP_GIT_URL}
     # We set labels to tell Traefik to assign a hostname to the new service
-    hostname: namenode
+    hostname: ${NAMENODE_DNS}
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -252,7 +252,7 @@ services:
 
   zeppelin:
     image: zeppelin:latest
-    hostname: zeppelin
+    hostname: ${ZEPPELIN_DNS}
     environment:
       - "SPARK_MASTER=spark://sparkmaster:7077"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
