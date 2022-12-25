@@ -55,7 +55,7 @@ services:
         - "traefik.tcp.routers.mysql-hive.rule=HostSNI(`*`)"
         - "traefik.tcp.routers.mysql-hive.entrypoints=mysql"
     volumes:
-      - "./db/mysql/dump/hive/2.3.9:/docker-entrypoint-initdb.d"
+      - "./db/mysql/dump/hive/3.1.0:/docker-entrypoint-initdb.d"
 
   kyuubi:
     image: ${SPARK_IMAGE}
