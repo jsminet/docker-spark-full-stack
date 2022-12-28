@@ -1196,7 +1196,7 @@
         },
         "spark.cores.max": {
           "name": "spark.cores.max",
-          "value": "3",
+          "value": "4",
           "type": "number"
         },
         "spark.sql.shuffle.partitions": {
