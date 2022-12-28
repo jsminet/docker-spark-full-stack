@@ -119,7 +119,7 @@ services:
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 4
       endpoint_mode: dnsrr
       placement:
         constraints:
