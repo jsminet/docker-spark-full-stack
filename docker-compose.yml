@@ -162,7 +162,6 @@ services:
       - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      - "hadoop3_nn:$DFS_NAMENODE_NAME_DIR"
       #- "./app/hadoop/data/namenode:$DFS_NAMENODE_NAME_DIR"
 
   datanode1:
@@ -190,7 +189,6 @@ services:
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      - "hadoop3_d1:$DFS_DATANODE_NAME_DIR"
       #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
 
   datanode2:
@@ -218,7 +216,6 @@ services:
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      - "hadoop3_d2:$DFS_DATANODE_NAME_DIR"
       #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
 
   datanode3:
@@ -246,7 +243,6 @@ services:
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      - "hadoop3_d3:$DFS_DATANODE_NAME_DIR"
       #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
 
   zookeeper:
@@ -288,7 +284,3 @@ services:
 volumes: 
   spark3:
   hive3:
-  hadoop3_nn:
-  hadoop3_d1:
-  hadoop3_d2:
-  hadoop3_d3:
