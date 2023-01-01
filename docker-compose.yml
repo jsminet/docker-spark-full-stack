@@ -76,6 +76,10 @@ services:
         - "traefik.tcp.routers.kyuubi.rule=HostSNI(`*`)"
         - "traefik.tcp.routers.kyuubi.entrypoints=kyuubi"
         - "traefik.tcp.services.kyuubi.loadbalancer.server.port=$KYUUBI_FRONTEND_BIND_PORT"
+        - "traefik.http.routers.kyuubi.rule=Host(`$KYUUBI_SPARKUI_DNS`)"
+        - "traefik.http.routers.kyuubi.entrypoints=web"
+        - "traefik.http.routers.kyuubi.service=kyuubi"
+        - "traefik.http.services.kyuubi.loadbalancer.server.port=$SPARK_UI_PORT"
     command: kyuubi
     volumes:
       - "./app/kyuubi:/app/kyuubi"
