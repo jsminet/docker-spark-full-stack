@@ -13,6 +13,7 @@ services:
       - 8020:8020
       - 8032:8032
       - 9866:9866
+      - 7077:7077
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -103,6 +104,9 @@ services:
           - node.role == manager
       labels:
         - "traefik.enable=true"
+        - "traefik.tcp.routers.sparkmaster.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.sparkmaster.entrypoints=sparkmaster"
+        - "traefik.tcp.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_PORT"
         - "traefik.http.routers.sparkmaster.rule=Host(`$SPARK_MASTER_DNS`)"
         - "traefik.http.routers.sparkmaster.entrypoints=web"
         - "traefik.http.routers.sparkmaster.service=sparkmaster"
