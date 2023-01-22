@@ -105,7 +105,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.tcp.routers.sparkmaster.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.sparkmaster.entrypoints=sparkmaster"
+        - "traefik.tcp.routers.sparkmaster.entrypoints=spark"
         - "traefik.tcp.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_PORT"
         - "traefik.http.routers.sparkmaster.rule=Host(`$SPARK_MASTER_DNS`)"
         - "traefik.http.routers.sparkmaster.entrypoints=web"
