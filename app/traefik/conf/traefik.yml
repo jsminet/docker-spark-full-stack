@@ -37,3 +37,5 @@ entryPoints:
     address: ":9866"
   mysql:
     address: ":3306"
+  spark:
+    address: ":7077"
