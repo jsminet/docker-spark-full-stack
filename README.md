@@ -1,6 +1,9 @@
 # docker-spark-full-stack
 
-Apache Spark and Kyuubi demo with Hadoop, Zeppelin, Hive on Mysql running on docker Swarm
+Apache Spark and Kyuubi demo with Hadoop, Zeppelin, Hive on Mysql running on docker Swarm as orchestrator
+
+## Prerequisite
+- Use docker compose V2
 
 ## Useful command
 

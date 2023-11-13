@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   traefik:
-    image: traefik:v2.9.6
+    image: traefik:v2.10.4
     ports:
       # Exposes port 80 for incomming web requests
       - 80:80
@@ -63,10 +61,10 @@ services:
     build: $KYUUBI_GIT_URL
     hostname: kyuubi
     environment:
-      - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
-      - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
-      - "KYUUBI_WORK_DIR_ROOT=$KYUUBI_WORK_DIR_ROOT"
+      - KYUUBI_CONF_DIR
+      - SPARK_CONF_DIR
+      - HADOOP_CONF_DIR
+      - KYUUBI_WORK_DIR_ROOT
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -93,10 +91,10 @@ services:
     build: $KYUUBI_GIT_URL
     hostname: ${SPARK_MASTER_DNS}
     environment:
-      - "SPARK_MASTER_PORT=$SPARK_MASTER_PORT"
-      - "SPARK_MASTER_WEBUI_PORT=$SPARK_MASTER_WEBUI_PORT"
-      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+      - SPARK_MASTER_PORT
+      - SPARK_MASTER_WEBUI_PORT
+      - SPARK_CONF_DIR
+      - HADOOP_CONF_DIR
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -121,10 +119,10 @@ services:
     build: $KYUUBI_GIT_URL
     hostname: "sparkworker{{.Task.Slot}}"
     environment:
-      - "SPARK_WORKER_CORES=$SPARK_WORKER_CORES"
-      - "SPARK_WORKER_MEMORY=$SPARK_WORKER_MEMORY"
-      - "SPARK_CONF_DIR=$SPARK_CONF_DIR"
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+      - SPARK_WORKER_CORES
+      - SPARK_WORKER_MEMORY
+      - SPARK_CONF_DIR
+      - HADOOP_CONF_DIR
     deploy:
       mode: replicated
       replicas: 4
@@ -164,10 +162,10 @@ services:
           - "traefik.tcp.routers.namenode.entrypoints=namenode"
           - "traefik.tcp.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_RPC_PORT"
     environment: 
-      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
-      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
-      - "DFS_REPLICATION=$DFS_REPLICATION"
-      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+      - DFS_NAMENODE_RPC_BIND_HOST
+      - YARN_RESOURCEMANAGER_HOSTNAME
+      - DFS_REPLICATION
+      - HADOOP_CONF_DIR
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
       #- "./app/hadoop/data/namenode:$DFS_NAMENODE_NAME_DIR"
@@ -190,10 +188,10 @@ services:
         - "traefik.tcp.routers.datanode1.entrypoints=datanode"
         - "traefik.tcp.services.datanode1.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
     environment: 
-      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
-      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
-      - "DFS_REPLICATION=$DFS_REPLICATION"
-      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+      - DFS_NAMENODE_RPC_BIND_HOST
+      - YARN_RESOURCEMANAGER_HOSTNAME
+      - DFS_REPLICATION
+      - HADOOP_CONF_DIR
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
@@ -217,10 +215,10 @@ services:
         - "traefik.tcp.routers.datanode2.entrypoints=datanode"
         - "traefik.tcp.services.datanode2.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
     environment: 
-      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
-      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
-      - "DFS_REPLICATION=$DFS_REPLICATION"
-      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+      - DFS_NAMENODE_RPC_BIND_HOST
+      - YARN_RESOURCEMANAGER_HOSTNAME
+      - DFS_REPLICATION
+      - HADOOP_CONF_DIR
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
@@ -244,10 +242,10 @@ services:
         - "traefik.tcp.routers.datanode3.entrypoints=datanode"
         - "traefik.tcp.services.datanode3.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
     environment: 
-      - "DFS_NAMENODE_RPC_BIND_HOST=$DFS_NAMENODE_RPC_BIND_HOST"
-      - "YARN_RESOURCEMANAGER_HOSTNAME=$YARN_RESOURCEMANAGER_HOSTNAME"
-      - "DFS_REPLICATION=$DFS_REPLICATION"
-      - "HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+      - DFS_NAMENODE_RPC_BIND_HOST
+      - YARN_RESOURCEMANAGER_HOSTNAME
+      - DFS_REPLICATION
+      - HADOOP_CONF_DIR
     command: datanode
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
@@ -266,9 +264,9 @@ services:
       - "SPARK_MASTER=spark://sparkmaster:7077"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
       - "SPARK_HOME=/opt/spark"
-      - "ZEPPELIN_CONF_DIR=$ZEPPELIN_CONF_DIR"
-      - "ZEPPELIN_LOG_DIR=$ZEPPELIN_LOG_DIR"
-      - "ZEPPELIN_NOTEBOOK_DIR=$ZEPPELIN_NOTEBOOK_DIR"
+      - ZEPPELIN_CONF_DIR
+      - ZEPPELIN_LOG_DIR
+      - ZEPPELIN_NOTEBOOK_DIR
     deploy:
       endpoint_mode: dnsrr
       placement:
