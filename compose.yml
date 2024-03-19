@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v2.10.4
+    image: traefik:v2.11.0
     ports:
       # Exposes port 80 for incomming web requests
       - 80:80
@@ -40,9 +40,9 @@ services:
         - "traefik.http.services.viz.loadbalancer.server.port=8080"
 
   mysql-hive:
-    image: mariadb:10.7
+    image: ${MARIADB_IMAGE}
     environment: 
-      - "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"
+      - MYSQL_ROOT_PASSWORD
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -258,7 +258,7 @@ services:
       - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
 
   zeppelin:
-    image: zeppelin:latest
+    image: ${ZEPPELIN_IMAGE}
     hostname: ${ZEPPELIN_DNS}
     environment:
       - "SPARK_MASTER=spark://sparkmaster:7077"
