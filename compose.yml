@@ -24,10 +24,29 @@ services:
         constraints:
           - node.role == manager
   
-  viz:
-    image: alexellis2/visualizer-arm:latest
+  viz-arm:
+    image: alexellis2/visualizer-arm
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    profiles:
+      - arm
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.viz.rule=Host(`$VIZ_DNS`)"
+        - "traefik.http.routers.viz.entrypoints=web"
+        - "traefik.http.routers.viz.service=viz"
+        - "traefik.http.services.viz.loadbalancer.server.port=8080"
+
+  viz-amd:
+    image: dockersamples/visualizer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    profiles:
+      - amd
     deploy:
       placement:
         constraints:
