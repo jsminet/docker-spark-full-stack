@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v2.11.0
+    image: traefik:v2.11.3
     ports:
       # Exposes port 80 for incomming web requests
       - 80:80
