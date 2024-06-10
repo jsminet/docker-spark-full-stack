@@ -108,7 +108,7 @@ services:
   sparkmaster:
     image: ${SPARK_IMAGE}
     build: $KYUUBI_GIT_URL
-    hostname: ${SPARK_MASTER_DNS}
+    hostname: sparkmaster
     environment:
       - SPARK_MASTER_PORT
       - SPARK_MASTER_WEBUI_PORT
@@ -165,7 +165,7 @@ services:
     image: ${HADOOP_IMAGE}
     build: ${HADOOP_GIT_URL}
     # We set labels to tell Traefik to assign a hostname to the new service
-    hostname: ${NAMENODE_DNS}
+    hostname: namenode
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -192,7 +192,7 @@ services:
   datanode1:
     image: ${HADOOP_IMAGE}
     build: ${HADOOP_GIT_URL}
-    hostname: ${DATANODE1_DNS}
+    hostname: datanode1
     deploy:
       placement:
         constraints:
@@ -219,7 +219,7 @@ services:
   datanode2:
     image: ${HADOOP_IMAGE}
     build: ${HADOOP_GIT_URL}
-    hostname: ${DATANODE2_DNS}
+    hostname: datanode2
     deploy:
       placement:
         constraints:
@@ -246,7 +246,7 @@ services:
   datanode3:
     image: ${HADOOP_IMAGE}
     build: ${HADOOP_GIT_URL}
-    hostname: ${DATANODE3_DNS}
+    hostname: datanode3
     deploy:
       placement:
         constraints:
@@ -278,7 +278,8 @@ services:
 
   zeppelin:
     image: ${ZEPPELIN_IMAGE}
-    hostname: ${ZEPPELIN_DNS}
+    hostname: zeppelin
+    build: ${ZEPPELIN_GIT_URL}
     environment:
       - "SPARK_MASTER=spark://sparkmaster:7077"
       - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
