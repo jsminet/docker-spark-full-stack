@@ -102,8 +102,8 @@ services:
     volumes:
       - "./app/kyuubi:/app/kyuubi"
       - "./jars/drivers/mysql:/jars/drivers/mysql"
+      - "./jars/drivers/hive3:/jars/drivers/hive3"
       - "spark3:$KYUUBI_SPARK_HOME"
-      - "hive3:/root/.ivy2"
 
   sparkmaster:
     image: ${SPARK_IMAGE}
@@ -309,4 +309,3 @@ services:
 
 volumes: 
   spark3:
-  hive3:
