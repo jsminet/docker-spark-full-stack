@@ -144,7 +144,7 @@ services:
       - HADOOP_CONF_DIR
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 2
       endpoint_mode: dnsrr
       placement:
         constraints:
