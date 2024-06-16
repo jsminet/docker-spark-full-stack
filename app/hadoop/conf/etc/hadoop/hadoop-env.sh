@@ -100,14 +100,14 @@ export HADOOP_OPTS="\
 # prefer any Xmx setting in their respective _OPT variable.
 # There is no default; the JVM will autoscale based upon machine
 # memory size.
-# export HADOOP_HEAPSIZE_MAX=
+export HADOOP_HEAPSIZE_MAX=${HADOOP_HEAPSIZE_MAX:-1g}
 
 # The minimum amount of heap to use (Java -Xms).  If no unit
 # is provided, it will be converted to MB.  Daemons will
 # prefer any Xms setting in their respective _OPT variable.
 # There is no default; the JVM will autoscale based upon machine
 # memory size.
-# export HADOOP_HEAPSIZE_MIN=
+export HADOOP_HEAPSIZE_MIN=${HADOOP_HEAPSIZE_MIN:-512m}
 
 # Enable extra debugging of Hadoop's JAAS binding, used to set up
 # Kerberos security.
@@ -306,7 +306,7 @@ export HADOOP_ROOT_LOGGER=INFO,console
 # and therefore may override any similar flags set in HADOOP_OPTS
 #
 # a) Set JMX options
-# export HDFS_NAMENODE_OPTS="-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=1026"
+export HDFS_NAMENODE_OPTS="-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=${NAMENODE_JMX_PORT} -Dcom.sun.management.jmxremote.rmi.port=${NAMENODE_JMX_PORT} -Djava.rmi.server.hostname=0.0.0.0"
 #
 # b) Set garbage collection logs
 # export HDFS_NAMENODE_OPTS="${HADOOP_GC_SETTINGS} -Xloggc:${HADOOP_LOG_DIR}/gc-rm.log-$(date +'%Y%m%d%H%M')"

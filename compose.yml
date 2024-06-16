@@ -131,6 +131,7 @@ services:
     volumes:
       - "./app/spark:/app/spark"
       - "./jars/drivers/mysql:/jars/drivers/mysql"
+      - "./jars/drivers/hive3:/jars/drivers/hive3"
       - "spark3:$KYUUBI_SPARK_HOME"
 
   sparkworker:
@@ -138,13 +139,13 @@ services:
     build: $KYUUBI_GIT_URL
     hostname: "sparkworker{{.Task.Slot}}"
     environment:
-      #- SPARK_WORKER_CORES
-      #- SPARK_WORKER_MEMORY
+      - SPARK_WORKER_CORES
+      - SPARK_WORKER_MEMORY
       - SPARK_CONF_DIR
       - HADOOP_CONF_DIR
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       endpoint_mode: dnsrr
       placement:
         constraints:
@@ -185,6 +186,9 @@ services:
       - YARN_RESOURCEMANAGER_HOSTNAME
       - DFS_REPLICATION
       - HADOOP_CONF_DIR
+      - NAMENODE_JMX_PORT
+      - HADOOP_HEAPSIZE_MIN
+      - HADOOP_HEAPSIZE_MAX
     volumes: 
       - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
       #- "./app/hadoop/data/namenode:$DFS_NAMENODE_NAME_DIR"
