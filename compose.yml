@@ -181,6 +181,9 @@ services:
           - "traefik.tcp.routers.namenode.rule=HostSNI(`*`)"
           - "traefik.tcp.routers.namenode.entrypoints=namenode"
           - "traefik.tcp.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_RPC_PORT"
+          - "traefik.tcp.routers.namenode2.rule=HostSNI(`*`)"
+          - "traefik.tcp.routers.namenode2.entrypoints=namenode2"
+          - "traefik.tcp.services.namenode2.loadbalancer.server.port=$NAMENODE_JMX_PORT"
     environment: 
       - DFS_NAMENODE_RPC_BIND_HOST
       - YARN_RESOURCEMANAGER_HOSTNAME
@@ -314,8 +317,8 @@ services:
   swarmpit:
     image: swarmpit/swarmpit:latest
     environment:
-      - SWARMPIT_DB=http://couchdb:5984
-      - SWARMPIT_INFLUXDB=http://influxdb:8086
+      - SWARMPIT_DB=http://couchdb
+      - SWARMPIT_INFLUXDB=http://influxdb
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     healthcheck:
@@ -356,6 +359,12 @@ services:
         reservations:
           cpus: '0.15'
           memory: 128M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.couchdb.rule=Host(`$COUCHDB_DNS`)"
+        - "traefik.http.routers.couchdb.entrypoints=web"
+        - "traefik.http.routers.couchdb.service=couchdb"
+        - "traefik.http.services.couchdb.loadbalancer.server.port=$COUCHDB_HTTP_PORT"
 
   influxdb:
     image: influxdb:1.8.10
@@ -369,6 +378,12 @@ services:
         reservations:
           cpus: '0.30'
           memory: 128M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.influxdb.rule=Host(`$INFLUXDB_DNS`)"
+        - "traefik.http.routers.influxdb.entrypoints=web"
+        - "traefik.http.routers.influxdb.service=influxdb"
+        - "traefik.http.services.influxdb.loadbalancer.server.port=$INFLUXDB_HTTP_PORT"
 
   agent:
     image: swarmpit/agent:latest
