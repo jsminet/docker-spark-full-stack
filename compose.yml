@@ -201,6 +201,7 @@ services:
     build: ${HADOOP_GIT_URL}
     hostname: datanode1
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.role == worker
@@ -228,6 +229,7 @@ services:
     build: ${HADOOP_GIT_URL}
     hostname: datanode2
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.role == worker
@@ -255,6 +257,7 @@ services:
     build: ${HADOOP_GIT_URL}
     hostname: datanode3
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.role == worker
@@ -280,6 +283,11 @@ services:
   zookeeper:
     image: zookeeper:latest
     hostname: zookeeper
+    deploy:
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.role == manager
     volumes: 
       - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
 
@@ -327,6 +335,7 @@ services:
       timeout: 10s
       retries: 3
     deploy:
+      endpoint_mode: dnsrr
       resources:
         limits:
           cpus: '0.50'
@@ -352,6 +361,7 @@ services:
     volumes:
       - couchdb-data:/opt/couchdb/data
     deploy:
+      endpoint_mode: dnsrr
       resources:
         limits:
           cpus: '0.30'
@@ -371,6 +381,7 @@ services:
     volumes:
       - influx-data:/var/lib/influxdb
     deploy:
+      endpoint_mode: dnsrr
       resources:
         limits:
           cpus: '0.60'
@@ -392,15 +403,16 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     deploy:
+      endpoint_mode: dnsrr
       mode: global
       labels:
         swarmpit.agent: 'true'
       resources:
         limits:
-          cpus: '0.10'
+          cpus: 0.1
           memory: 64M
         reservations:
-          cpus: '0.05'
+          cpus: .05
           memory: 32M
 
 volumes: 
