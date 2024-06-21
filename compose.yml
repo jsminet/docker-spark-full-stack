@@ -14,7 +14,7 @@ services:
       - 7077:7077
     volumes:
       # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
     deploy:
       update_config:
@@ -311,5 +311,84 @@ services:
       - "./app/kyuubi:/app/kyuubi"
       - "spark3:/opt/spark"
 
+  swarmpit:
+    image: swarmpit/swarmpit:latest
+    environment:
+      - SWARMPIT_DB=http://couchdb:5984
+      - SWARMPIT_INFLUXDB=http://influxdb:8086
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.swarmpit.rule=Host(`$SWARMPIT_DNS`)"
+        - "traefik.http.routers.swarmpit.entrypoints=web"
+        - "traefik.http.routers.swarmpit.service=swarmpit"
+        - "traefik.http.services.swarmpit.loadbalancer.server.port=$SWARMPIT_HTTP_PORT"
+
+  couchdb:
+    image: couchdb:3.3.3
+    environment:   
+        - COUCHDB_USER=admin
+        - COUCHDB_PASSWORD=password
+    volumes:
+      - couchdb-data:/opt/couchdb/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 256M
+        reservations:
+          cpus: '0.15'
+          memory: 128M
+
+  influxdb:
+    image: influxdb:1.8.10-alpine
+    volumes:
+      - influx-data:/var/lib/influxdb
+    deploy:
+      resources:
+        limits:
+          cpus: '0.60'
+          memory: 512M
+        reservations:
+          cpus: '0.30'
+          memory: 128M
+
+  agent:
+    image: swarmpit/agent:latest
+    environment:
+      - DOCKER_API_VERSION=1.35
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    deploy:
+      mode: global
+      labels:
+        swarmpit.agent: 'true'
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 64M
+        reservations:
+          cpus: '0.05'
+          memory: 32M
+
 volumes: 
   spark3:
+  couchdb-data:
+  influx-data:
