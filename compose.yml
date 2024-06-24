@@ -326,7 +326,7 @@ services:
     image: swarmpit/swarmpit:latest
     hostname: swarmpit
     environment:
-      - SWARMPIT_DB=http://couchdb:5984
+      - SWARMPIT_DB=http://$COUCHDB_USER:$COUCHDB_PASSWORD@couchdb:5984
       - SWARMPIT_INFLUXDB=http://influxdb:8086
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -404,6 +404,8 @@ services:
     hostname: agent
     environment:
       - DOCKER_API_VERSION=1.35
+      - EVENT_ENDPOINT=http://swarmpit:8080/events
+      - HEALTH_CHECK_ENDPOINT=http://swarmpit:8080/version
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     deploy:
