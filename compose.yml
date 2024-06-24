@@ -324,9 +324,10 @@ services:
 
   swarmpit:
     image: swarmpit/swarmpit:latest
+    hostname: swarmpit
     environment:
-      - SWARMPIT_DB=http://couchdb
-      - SWARMPIT_INFLUXDB=http://influxdb
+      - SWARMPIT_DB=http://couchdb:5984
+      - SWARMPIT_INFLUXDB=http://influxdb:8086
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     healthcheck:
@@ -355,6 +356,7 @@ services:
 
   couchdb:
     image: couchdb:3.3.3
+    hostname: couchdb
     environment:   
         - COUCHDB_USER
         - COUCHDB_PASSWORD
@@ -378,6 +380,7 @@ services:
 
   influxdb:
     image: influxdb:1.8.10
+    hostname: influxdb
     volumes:
       - influx-data:/var/lib/influxdb
     deploy:
@@ -398,6 +401,7 @@ services:
 
   agent:
     image: swarmpit/agent:latest
+    hostname: agent
     environment:
       - DOCKER_API_VERSION=1.35
     volumes:
