@@ -1,62 +1,38 @@
+include:
+  - compose-include-hadoop.yml
 services:
   traefik:
     image: traefik:v2.11.3
     ports:
       # Exposes port 80 for incomming web requests
-      - 80:80
+      - $TRAEFIK_HTTP_WEB_PORT:$TRAEFIK_HTTP_WEB_PORT
       # The Web UI port http://0.0.0.0:8080 (enabled by --api.insecure=true)
-      - 8080:8080
-      - 3306:3306
-      - 10009:10009
-      - 8020:8020
-      - 8032:8032
-      - 9866:9866
-      - 7077:7077
+      - $TRAEFIK_HTTP_WEB_UI_PORT:$TRAEFIK_HTTP_WEB_UI_PORT
+      - $MARIADB_RPC_PORT:$MARIADB_RPC_PORT
+      - $KYUUBI_FRONTEND_BIND_PORT:$KYUUBI_FRONTEND_BIND_PORT
+      - $DFS_NAMENODE_RPC_PORT:$DFS_NAMENODE_RPC_PORT
+      #- 8032:8032
+      - $DFS_DATANODE_RPC_PORT:$DFS_DATANODE_RPC_PORT
+      - $SPARK_MASTER_PORT:$SPARK_MASTER_PORT
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
     deploy:
+      endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
       update_config:
         delay: 10s
         order: start-first
       placement:
         constraints:
           - node.role == manager
-  
-  viz-arm:
-    image: alexellis2/visualizer-arm
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    profiles:
-      - arm
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.viz.rule=Host(`$VIZ_DNS`)"
-        - "traefik.http.routers.viz.entrypoints=web"
-        - "traefik.http.routers.viz.service=viz"
-        - "traefik.http.services.viz.loadbalancer.server.port=8080"
-
-  viz-amd:
-    image: dockersamples/visualizer
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    profiles:
-      - amd
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.viz.rule=Host(`$VIZ_DNS`)"
-        - "traefik.http.routers.viz.entrypoints=web"
-        - "traefik.http.routers.viz.service=viz"
-        - "traefik.http.services.viz.loadbalancer.server.port=8080"
 
   mysql-hive:
     image: ${MARIADB_IMAGE}
@@ -64,6 +40,13 @@ services:
       - MYSQL_ROOT_PASSWORD
     deploy:
       endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
       placement:
         constraints:
           - node.role == manager
@@ -86,6 +69,13 @@ services:
       - KYUUBI_WORK_DIR_ROOT
     deploy:
       endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
+        reservations:
+          cpus: '1'
+          memory: 256M
       placement:
         constraints:
           - node.role == manager
@@ -116,6 +106,13 @@ services:
       - HADOOP_CONF_DIR
     deploy:
       endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.30'
+          memory: 128M
       placement:
         constraints:
           - node.role == manager
@@ -147,6 +144,13 @@ services:
       mode: replicated
       replicas: 3
       endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '3'
+          memory: 6G
+        reservations:
+          cpus: '1'
+          memory: 512M
       placement:
         constraints:
           - node.role == worker
@@ -162,129 +166,18 @@ services:
       - "./jars/drivers/mysql:/jars/drivers/mysql"
       - "spark3:$KYUUBI_SPARK_HOME"
 
-  namenode:
-    image: ${HADOOP_IMAGE}
-    build: ${HADOOP_GIT_URL}
-    # We set labels to tell Traefik to assign a hostname to the new service
-    hostname: namenode
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-          - "traefik.enable=true"
-          - "traefik.http.routers.namenode.rule=Host(`$NAMENODE_DNS`)"
-          - "traefik.http.routers.namenode.entrypoints=web"
-          - "traefik.http.routers.namenode.service=namenode"
-          - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
-          - "traefik.tcp.routers.namenode.rule=HostSNI(`*`)"
-          - "traefik.tcp.routers.namenode.entrypoints=namenode"
-          - "traefik.tcp.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_RPC_PORT"
-          - "traefik.tcp.routers.namenode2.rule=HostSNI(`*`)"
-          - "traefik.tcp.routers.namenode2.entrypoints=namenode2"
-          - "traefik.tcp.services.namenode2.loadbalancer.server.port=$NAMENODE_JMX_PORT"
-    environment: 
-      - DFS_NAMENODE_RPC_BIND_HOST
-      - YARN_RESOURCEMANAGER_HOSTNAME
-      - DFS_REPLICATION
-      - HADOOP_CONF_DIR
-      - NAMENODE_JMX_PORT
-      - HADOOP_HEAPSIZE_MIN
-      - HADOOP_HEAPSIZE_MAX
-    volumes: 
-      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      #- "./app/hadoop/data/namenode:$DFS_NAMENODE_NAME_DIR"
-
-  datanode1:
-    image: ${HADOOP_IMAGE}
-    build: ${HADOOP_GIT_URL}
-    hostname: datanode1
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role == worker
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.datanode1.rule=Host(`$DATANODE1_DNS`)"
-        - "traefik.http.routers.datanode1.entrypoints=web"
-        - "traefik.http.routers.datanode1.service=datanode1"
-        - "traefik.http.services.datanode1.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
-        - "traefik.tcp.routers.datanode1.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.datanode1.entrypoints=datanode"
-        - "traefik.tcp.services.datanode1.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
-    environment: 
-      - DFS_NAMENODE_RPC_BIND_HOST
-      - YARN_RESOURCEMANAGER_HOSTNAME
-      - DFS_REPLICATION
-      - HADOOP_CONF_DIR
-    command: datanode
-    volumes: 
-      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
-
-  datanode2:
-    image: ${HADOOP_IMAGE}
-    build: ${HADOOP_GIT_URL}
-    hostname: datanode2
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role == worker
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.datanode2.rule=Host(`$DATANODE2_DNS`)"
-        - "traefik.http.routers.datanode2.entrypoints=web"
-        - "traefik.http.routers.datanode2.service=datanode2"
-        - "traefik.http.services.datanode2.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
-        - "traefik.tcp.routers.datanode2.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.datanode2.entrypoints=datanode"
-        - "traefik.tcp.services.datanode2.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
-    environment: 
-      - DFS_NAMENODE_RPC_BIND_HOST
-      - YARN_RESOURCEMANAGER_HOSTNAME
-      - DFS_REPLICATION
-      - HADOOP_CONF_DIR
-    command: datanode
-    volumes: 
-      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
-
-  datanode3:
-    image: ${HADOOP_IMAGE}
-    build: ${HADOOP_GIT_URL}
-    hostname: datanode3
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role == worker
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.datanode3.rule=Host(`$DATANODE3_DNS`)"
-        - "traefik.http.routers.datanode3.entrypoints=web"
-        - "traefik.http.routers.datanode3.service=datanode3"
-        - "traefik.http.services.datanode3.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
-        - "traefik.tcp.routers.datanode3.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.datanode3.entrypoints=datanode"
-        - "traefik.tcp.services.datanode3.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
-    environment: 
-      - DFS_NAMENODE_RPC_BIND_HOST
-      - YARN_RESOURCEMANAGER_HOSTNAME
-      - DFS_REPLICATION
-      - HADOOP_CONF_DIR
-    command: datanode
-    volumes: 
-      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
-      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
-
   zookeeper:
     image: zookeeper:latest
     hostname: zookeeper
     deploy:
       endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 128M
+        reservations:
+          cpus: '0.15'
+          memory: 64M
       placement:
         constraints:
           - node.role == manager

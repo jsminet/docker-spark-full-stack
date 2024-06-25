@@ -1,0 +1,146 @@
+services:
+  namenode:
+      image: ${HADOOP_IMAGE}
+      build: ${HADOOP_GIT_URL}
+      # We set labels to tell Traefik to assign a hostname to the new service
+      hostname: namenode
+      deploy:
+        endpoint_mode: dnsrr
+        resources:
+          limits:
+            cpus: '1'
+            memory: 1024M
+          reservations:
+            cpus: '0.30'
+            memory: 128M
+        placement:
+          constraints:
+            - node.role == manager
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.namenode.rule=Host(`$NAMENODE_DNS`)"
+            - "traefik.http.routers.namenode.entrypoints=web"
+            - "traefik.http.routers.namenode.service=namenode"
+            - "traefik.http.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_HTTP_PORT"
+            - "traefik.tcp.routers.namenode.rule=HostSNI(`*`)"
+            - "traefik.tcp.routers.namenode.entrypoints=namenode"
+            - "traefik.tcp.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_RPC_PORT"
+            - "traefik.tcp.routers.namenode2.rule=HostSNI(`*`)"
+            - "traefik.tcp.routers.namenode2.entrypoints=namenode2"
+            - "traefik.tcp.services.namenode2.loadbalancer.server.port=$NAMENODE_JMX_PORT"
+      environment: 
+        - DFS_NAMENODE_RPC_BIND_HOST
+        - YARN_RESOURCEMANAGER_HOSTNAME
+        - DFS_REPLICATION
+        - HADOOP_CONF_DIR
+        - NAMENODE_JMX_PORT
+        - HADOOP_HEAPSIZE_MIN
+        - HADOOP_HEAPSIZE_MAX
+      volumes: 
+        - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+        #- "./app/hadoop/data/namenode:$DFS_NAMENODE_NAME_DIR"
+
+  datanode1:
+    image: ${HADOOP_IMAGE}
+    build: ${HADOOP_GIT_URL}
+    hostname: datanode1
+    deploy:
+      endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.30'
+          memory: 128M
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.datanode1.rule=Host(`$DATANODE1_DNS`)"
+        - "traefik.http.routers.datanode1.entrypoints=web"
+        - "traefik.http.routers.datanode1.service=datanode1"
+        - "traefik.http.services.datanode1.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
+        - "traefik.tcp.routers.datanode1.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.datanode1.entrypoints=datanode"
+        - "traefik.tcp.services.datanode1.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
+    environment: 
+      - DFS_NAMENODE_RPC_BIND_HOST
+      - YARN_RESOURCEMANAGER_HOSTNAME
+      - DFS_REPLICATION
+      - HADOOP_CONF_DIR
+    command: datanode
+    volumes: 
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
+
+  datanode2:
+    image: ${HADOOP_IMAGE}
+    build: ${HADOOP_GIT_URL}
+    hostname: datanode2
+    deploy:
+      endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.30'
+          memory: 128M
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.datanode2.rule=Host(`$DATANODE2_DNS`)"
+        - "traefik.http.routers.datanode2.entrypoints=web"
+        - "traefik.http.routers.datanode2.service=datanode2"
+        - "traefik.http.services.datanode2.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
+        - "traefik.tcp.routers.datanode2.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.datanode2.entrypoints=datanode"
+        - "traefik.tcp.services.datanode2.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
+    environment: 
+      - DFS_NAMENODE_RPC_BIND_HOST
+      - YARN_RESOURCEMANAGER_HOSTNAME
+      - DFS_REPLICATION
+      - HADOOP_CONF_DIR
+    command: datanode
+    volumes: 
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
+
+  datanode3:
+    image: ${HADOOP_IMAGE}
+    build: ${HADOOP_GIT_URL}
+    hostname: datanode3
+    deploy:
+      endpoint_mode: dnsrr
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.30'
+          memory: 128M
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.datanode3.rule=Host(`$DATANODE3_DNS`)"
+        - "traefik.http.routers.datanode3.entrypoints=web"
+        - "traefik.http.routers.datanode3.service=datanode3"
+        - "traefik.http.services.datanode3.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
+        - "traefik.tcp.routers.datanode3.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.datanode3.entrypoints=datanode"
+        - "traefik.tcp.services.datanode3.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
+    environment: 
+      - DFS_NAMENODE_RPC_BIND_HOST
+      - YARN_RESOURCEMANAGER_HOSTNAME
+      - DFS_REPLICATION
+      - HADOOP_CONF_DIR
+    command: datanode
+    volumes: 
+      - "./app/hadoop/conf/etc/hadoop:$HADOOP_CONF_DIR"
+      #- "./app/hadoop/data/datanode:$DFS_DATANODE_NAME_DIR"
