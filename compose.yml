@@ -19,7 +19,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
     deploy:
-      endpoint_mode: dnsrr
       resources:
         limits:
           cpus: '0.5'

@@ -25,9 +25,6 @@ services:
             - "traefik.tcp.routers.namenode.rule=HostSNI(`*`)"
             - "traefik.tcp.routers.namenode.entrypoints=namenode"
             - "traefik.tcp.services.namenode.loadbalancer.server.port=$DFS_NAMENODE_RPC_PORT"
-            - "traefik.tcp.routers.namenode2.rule=HostSNI(`*`)"
-            - "traefik.tcp.routers.namenode2.entrypoints=namenode2"
-            - "traefik.tcp.services.namenode2.loadbalancer.server.port=$NAMENODE_JMX_PORT"
       environment: 
         - DFS_NAMENODE_RPC_BIND_HOST
         - YARN_RESOURCEMANAGER_HOSTNAME
