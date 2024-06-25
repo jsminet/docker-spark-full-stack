@@ -33,9 +33,11 @@ entryPoints:
     address: ":10009"
   namenode:
     address: ":8020"
-  namenode2:
-    address: ":9990"
-  datanode:
+  datanode1:
+    address: ":9866"
+  datanode2:
+    address: ":9866"
+  datanode3:
     address: ":9866"
   mysql:
     address: ":3306"

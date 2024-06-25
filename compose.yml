@@ -1,5 +1,5 @@
 include:
-  - compose-include-hadoop.yml
+  - compose-include-hadoopV2.yml
 services:
   traefik:
     image: traefik:v2.11.3
