@@ -57,23 +57,16 @@ services:
           - node.role == worker
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.datanode1.rule=Host(`$DATANODE1_DNS`)"
-        - "traefik.http.routers.datanode1.entrypoints=web"
-        - "traefik.http.routers.datanode1.service=datanode1"
-        - "traefik.http.services.datanode1.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
-        - "traefik.http.routers.datanode2.rule=Host(`$DATANODE2_DNS`)"
-        - "traefik.http.routers.datanode2.entrypoints=web"
-        - "traefik.http.routers.datanode2.service=datanode2"
-        - "traefik.http.services.datanode2.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
-        - "traefik.http.routers.datanode3.rule=Host(`$DATANODE2_DNS`)"
-        - "traefik.http.routers.datanode3.entrypoints=web"
-        - "traefik.http.routers.datanode3.service=datanode3"
-        - "traefik.http.services.datanode3.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
+        - "traefik.http.routers.datanode.rule=Host(`datanode{{.Task.Slot}}`)"
+        - "traefik.http.routers.datanode.entrypoints=web"
+        - "traefik.http.routers.datanode.service=datanode"
+        - "traefik.http.services.datanode.loadbalancer.server.port=$DFS_DATANODE_HTTP_PORT"
         - "traefik.tcp.routers.datanode.rule=HostSNI(`*`)"
         - "traefik.tcp.routers.datanode.entrypoints=datanode"
         - "traefik.tcp.services.datanode.loadbalancer.server.port=$DFS_DATANODE_RPC_PORT"
         - "traefik.tcp.services.datanode.loadbalancer.passHostHeader=true"
-
+        - "traefik.tcp.services.datanode.loadbalancer.sticky.cookie=true"
+        - "traefik.tcp.services.datanode.loadbalancer.sticky.cookie.name=datanode"
     environment: 
       - DFS_NAMENODE_RPC_BIND_HOST
       - YARN_RESOURCEMANAGER_HOSTNAME
