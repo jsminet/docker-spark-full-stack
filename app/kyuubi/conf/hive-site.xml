@@ -17,33 +17,36 @@
 -->
 
 <configuration>
-
   <property>
     <name>javax.jdo.option.ConnectionURL</name>
     <value>jdbc:mysql://mysql-hive:3306/hive?autoReconnect=true&amp;useSSL=false</value>
   </property>
-
-  <property>
-    <name>javax.jdo.option.ConnectionPassword</name>
-    <value>secret</value>
-  </property>
-
-  <property>
-    <name>javax.jdo.option.ConnectionUserName</name>
-    <value>root</value>
-    <description>Username to use against metastore database</description>
-  </property>
-
   <property>
     <name>javax.jdo.option.ConnectionDriverName</name>
     <value>com.mysql.jdbc.Driver</value>
     <description>Driver class name for a JDBC metastore</description>
   </property>
-
   <property>
+    <name>javax.jdo.option.ConnectionUserName</name>
+    <value>root</value>
+    <description>Username to use against metastore database</description>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>secret</value>
+  </property>
+  <!--property>
     <name>hive.metastore.warehouse.dir</name>
     <value>/user/hive/warehouse</value>
     <description>location of default database for the warehouse</description>
+  </property-->
+  <property>
+    <name>hive.metastore.warehouse.dir</name>
+    <value>s3a://spark-bucket/warehouse</value>
+    <description>location of default database for the warehouse</description>
   </property>
-  
+  <!--property>
+      <name>hive.metastore.uris</name>
+      <value>thrift://metastore:9083</value>
+  </property-->
 </configuration>

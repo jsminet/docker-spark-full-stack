@@ -17,10 +17,15 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-  <property>
+  <!--property>
     <name>fs.defaultFS</name>
     <value>hdfs://namenode:8020</value>
-  </property>
+  </property-->
+
+  <property>
+    <name>fs.defaultFS</name>
+    <value>s3a://spark-bucket/</value>
+</property>
 
   <property>
     <name>hadoop.proxyuser.root.hosts</name>
@@ -49,6 +54,32 @@
     <name>hadoop.proxyuser.zeppelin.users</name>
     <value>*</value>
   </property>
+
+  <property>
+    <name>fs.s3a.access.key</name>
+    <value>minio</value>
+</property>
+<property>
+    <name>fs.s3a.secret.key</name>
+    <value>minio_minio</value>
+</property>
+<property>
+    <name>fs.s3a.connection.ssl.enabled</name>
+    <value>false</value>
+</property>
+<property>
+    <name>fs.s3a.path.style.access</name>
+    <value>true</value>
+</property>
+<property>
+    <name>fs.s3a.endpoint</name>
+    <value>http://minio1:9000</value>
+</property>
+<property>
+    <name>fs.s3a.committer.name</name>
+    <value>magic</value>
+</property>
+
 
 
 </configuration>
