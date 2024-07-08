@@ -9,12 +9,21 @@ x-minio-common: &minio-common
     interval: 10s
     start_interval: 1s
     start_period: 10s
-  labels:
-    - traefik.enable=true
-    - traefik.http.routers.minio.entrypoints=web
-    - traefik.http.routers.minio.rule=Host(`$MINIO_DNS`)
-    - traefik.http.routers.minio.service=minio
-    - traefik.http.services.minio.loadbalancer.server.port=$MINIO_CONSOLE_PORT_NUMBER
+  deploy:
+    endpoint_mode: dnsrr
+    resources:
+      limits:
+        cpus: '0.5'
+        memory: 256M
+      reservations:
+        cpus: '0.25'
+        memory: 128M
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.minio.entrypoints=web
+      - traefik.http.routers.minio.rule=Host(`$MINIO_DNS`)
+      - traefik.http.routers.minio.service=minio
+      - traefik.http.services.minio.loadbalancer.server.port=$MINIO_CONSOLE_PORT_NUMBER
   command: server --console-address ":$MINIO_CONSOLE_PORT_NUMBER" http://minio{1...4}/data{1...2}
 
 services:
