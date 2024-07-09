@@ -1,79 +1,60 @@
-# Settings and configurations that are common for all containers
-x-minio-common: &minio-common
-  image: minio/minio
-  environment:
-    - MINIO_ROOT_USER
-    - MINIO_ROOT_PASSWORD
-  healthcheck:
-    test: ["CMD", "mc", "ready", "local"]
-    interval: 10s
-    start_interval: 1s
-    start_period: 10s
-  deploy:
-    endpoint_mode: dnsrr
-    resources:
-      limits:
-        cpus: '0.5'
-        memory: 256M
-      reservations:
-        cpus: '0.25'
-        memory: 128M
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.minio.entrypoints=web
-      - traefik.http.routers.minio.rule=Host(`$MINIO_DNS`)
-      - traefik.http.routers.minio.service=minio
-      - traefik.http.services.minio.loadbalancer.server.port=$MINIO_CONSOLE_PORT_NUMBER
-  command: server --console-address ":$MINIO_CONSOLE_PORT_NUMBER" http://minio{1...4}/data{1...2}
-
 services:
-  minio1:
-    <<: *minio-common
-    hostname: minio1
+  minio:
+    image: minio/minio
+    environment:
+      - MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD
+    deploy:
+      replicas: 4
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.minio.entrypoints=web
+        - traefik.http.routers.minio.rule=Host(`$MINIO_DNS`)
+        - traefik.http.routers.minio.service=minio
+        - traefik.http.services.minio.loadbalancer.server.port=$MINIO_CONSOLE_PORT_NUMBER
+    # AVOID Error: grid: http://minio1:9000 re-connecting to ws://minio2:9000/minio/grid/v1: dial tcp 10.0.78.8:9000: connect: 
+    #              connection refused (*net.OpError) Sleeping 1.173s (3) (*fmt.wrapError)
+    #       Error: unexpected drive ordering on pool: 1st: found drive at (set=1st, drive=2nd), expected at (set=1st, drive=1st): /data1(): 
+    #              inconsistent drive found (*fmt.wrapError)
+    command: "server --console-address ':$MINIO_CONSOLE_PORT_NUMBER' \
+             http://minio1/data{1...2} \
+             http://minio2/data{1...2} \
+             http://minio3/data{1...2} \
+             http://minio4/data{1...2}"
+    # AVOID Error: Unable to resolve DNS for http://minio1/data1: lookup minio1 on 127.0.0.11:53: no such host (*fmt.wrapError)
+    hostname: minio{{.Task.Slot}}
     volumes:
-      - data1-1:/data1
-      - data1-2:/data2
-
-  minio2:
-    <<: *minio-common
-    hostname: minio2
-    volumes:
-      - data2-1:/data1
-      - data2-2:/data2
-
-  minio3:
-    <<: *minio-common
-    hostname: minio3
-    volumes:
-      - data3-1:/data1
-      - data3-2:/data2
-
-  minio4:
-    <<: *minio-common
-    hostname: minio4
-    volumes:
-      - data4-1:/data1
-      - data4-2:/data2
+      - minio-data1:/data1
+      - minio-data2:/data2
 
   createbuckets:
     image: minio/mc
-    depends_on:
-      minio1:
-        condition: service_healthy
     entrypoint:
       - sh 
       - -c
-      - |
-        mc alias set myminio http://minio1:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD &&
-        mc mb myminio/spark-bucket &&
-        mc anonymous set public myminio/spark-bucket
+      - "sleep 25 && \
+        mc alias set myminio http://minio1:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD && \
+        mc mb myminio/spark-bucket && \
+        mc anonymous set public myminio/spark-bucket"
+    deploy:
+      restart_policy:
+        condition: none
 
 volumes:
-  data1-1:
-  data1-2:
-  data2-1:
-  data2-2:
-  data3-1:
-  data3-2:
-  data4-1:
-  data4-2:
+  minio-data1:
+  minio-data2:
