@@ -1,1 +1,0 @@
-Get last hive 3 dependencies by downloading the jar with all these command:
