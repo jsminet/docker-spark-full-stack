@@ -33,10 +33,6 @@ entryPoints:
     address: ":443"
   kyuubi:
     address: ":10009"
-  namenode:
-    address: ":8020"
-  datanode:
-    address: ":9866"
   postgres:
     address: ":5432"
   spark:
