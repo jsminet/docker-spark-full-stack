@@ -132,7 +132,7 @@ services:
       - SPARK_MASTER_PORT
       - SPARK_MASTER_WEBUI_PORT
       - SPARK_CONF_DIR
-      - HADOOP_CONF_DIR
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
     deploy:
       endpoint_mode: dnsrr
       <<: *mid-resources
@@ -148,9 +148,6 @@ services:
         - "traefik.http.routers.sparkmaster.entrypoints=web"
         - "traefik.http.routers.sparkmaster.service=sparkmaster"
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
-    volumes:
-      - "./app/spark:/app/spark"
-      - "spark3:$KYUUBI_SPARK_HOME"
 
   sparkworker:
     image: ${SPARK_IMAGE}
@@ -160,7 +157,7 @@ services:
       - SPARK_WORKER_CORES
       - SPARK_WORKER_MEMORY
       - SPARK_CONF_DIR
-      - HADOOP_CONF_DIR
+      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
     deploy:
       mode: replicated
       replicas: 3
@@ -176,10 +173,7 @@ services:
         - "traefik.http.routers.sparkworker.service=sparkworker"
         - "traefik.http.services.sparkworker.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
-    volumes:
-      - "./app/spark:/app/spark"
-      - "./jars/drivers/mysql:/jars/drivers/mysql"
-      - "spark3:$KYUUBI_SPARK_HOME"
+
 
   zookeeper:
     image: zookeeper:latest
