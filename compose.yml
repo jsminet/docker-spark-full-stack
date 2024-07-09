@@ -35,11 +35,8 @@ services:
       - $TRAEFIK_HTTP_WEB_PORT:$TRAEFIK_HTTP_WEB_PORT
       # The Web UI port http://0.0.0.0:8080 (enabled by --api.insecure=true)
       - $TRAEFIK_HTTP_WEB_UI_PORT:$TRAEFIK_HTTP_WEB_UI_PORT
-      - $MARIADB_RPC_PORT:$MARIADB_RPC_PORT
+      - $POSTGRES_RPC_PORT:$POSTGRES_RPC_PORT
       - $KYUUBI_FRONTEND_BIND_PORT:$KYUUBI_FRONTEND_BIND_PORT
-      - $DFS_NAMENODE_RPC_PORT:$DFS_NAMENODE_RPC_PORT
-      #- 8032:8032
-      - $DFS_DATANODE_RPC_PORT:$DFS_DATANODE_RPC_PORT
       - $SPARK_MASTER_PORT:$SPARK_MASTER_PORT
     volumes:
       # So that Traefik can listen to the Docker events
@@ -54,10 +51,13 @@ services:
         constraints:
           - node.role == manager
 
-  mysql-hive:
-    image: ${MARIADB_IMAGE}
+  postgres:
+    image: postgres:${POSTGRES_VERSION}
+    hostname: postgres
     environment: 
-      - MYSQL_ROOT_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
     deploy:
       endpoint_mode: dnsrr
       <<: *mid-resources
@@ -66,21 +66,18 @@ services:
           - node.role == manager
       labels:
         - "traefik.enable=true"
-        - "traefik.tcp.services.mysql-hive.loadbalancer.server.port=3306"
-        - "traefik.tcp.routers.mysql-hive.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.mysql-hive.entrypoints=mysql"
+        - "traefik.tcp.services.postgres.loadbalancer.server.port=$POSTGRES_RPC_PORT"
+        - "traefik.tcp.routers.postgres.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.postgres.entrypoints=postgres"
     volumes:
-      - "./db/mysql/dump/hive/3.1.0:/docker-entrypoint-initdb.d"
+      - "./db/postgres/dump/hive/3.1.0:/docker-entrypoint-initdb.d"
 
   kyuubi:
-    image: ${SPARK_IMAGE}
-    build: $KYUUBI_GIT_URL
+    image: nekyuubi/kyuubi-playground-kyuubi:${KYUUBI_VERSION}
+    build: 
+      context: docker
+      dockerfile: kyuubi-playground-kyuubi.Dockerfile
     hostname: kyuubi
-    environment:
-      - "KYUUBI_CONF_DIR=$KYUUBI_CONF_DIR"
-      - "SPARK_CONF_DIR=$KYUUBI_CONF_DIR"
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
-      - KYUUBI_WORK_DIR_ROOT
     deploy:
       endpoint_mode: dnsrr
       <<: *high-resources
@@ -98,10 +95,34 @@ services:
         - "traefik.http.services.kyuubi.loadbalancer.server.port=$SPARK_UI_PORT"
     command: kyuubi
     volumes:
-      - "./app/kyuubi:/app/kyuubi"
-      - "./jars/drivers/mysql:/jars/drivers/mysql"
-      - "./jars/drivers/hive3:/jars/drivers/hive3"
-      - "spark3:$KYUUBI_SPARK_HOME"
+      - .app/kyuubi/conf/core-site.xml:/etc/hadoop/conf/core-site.xml
+      - .app/kyuubi/conf/hive-site.xml:/etc/hive/conf/hive-site.xml
+      - .app/spark/conf/spark-defaults.conf:/etc/spark/conf/spark-defaults.conf
+      - .app/kyuubi/conf/kyuubi-defaults.conf:/etc/kyuubi/conf/kyuubi-defaults.conf
+      - .app/kyuubi/conf/kyuubi-log4j2.xml:/etc/kyuubi/conf/log4j2.xml
+      - .db/postgres/dump/tpc/load-dataset-tpcds-tiny.sql:/opt/load_data/load-dataset-tpcds-tiny.sql
+      - .db/postgres/dump/tpc/load-dataset-tpch-tiny.sql:/opt/load_data/load-dataset-tpch-tiny.sql
+
+  metastore:
+    image: nekyuubi/kyuubi-playground-metastore:${KYUUBI_VERSION}
+    build: 
+      context: docker
+      dockerfile: kyuubi-playground-metastore.Dockerfile
+    hostname: metastore
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *high-resources
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tcp.routers.metastore.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.metastore.entrypoints=metastore"
+        - "traefik.tcp.services.metastore.loadbalancer.server.port=$METASTORE_RPC_PORT"
+    volumes:
+      - .app/kyuubi/conf/core-site.xml:/etc/hadoop/conf/core-site.xml
+      - .app/kyuubi/conf/hive-site.xml:/etc/hive/conf/hive-site.xml
 
   sparkmaster:
     image: ${SPARK_IMAGE}
@@ -129,8 +150,6 @@ services:
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     volumes:
       - "./app/spark:/app/spark"
-      - "./jars/drivers/mysql:/jars/drivers/mysql"
-      - "./jars/drivers/hive3:/jars/drivers/hive3"
       - "spark3:$KYUUBI_SPARK_HOME"
 
   sparkworker:

@@ -37,7 +37,9 @@ entryPoints:
     address: ":8020"
   datanode:
     address: ":9866"
-  mysql:
-    address: ":3306"
+  postgres:
+    address: ":5432"
   spark:
     address: ":7077"
+  metastore:
+    address: ":9083"
