@@ -34,15 +34,13 @@ SELF_DIR="$(cd "$(dirname "$0")"; pwd)"
 
 source "${SELF_DIR}/../.env"
 
-env
-
 ${BUILD_CMD} \
   --build-arg APACHE_MIRROR=${APACHE_MIRROR} \
   --build-arg MAVEN_MIRROR=${MAVEN_MIRROR} \
   --build-arg KYUUBI_VERSION=${KYUUBI_VERSION} \
   --file "${SELF_DIR}/image/kyuubi-playground-base.Dockerfile" \
   --tag nekyuubi/kyuubi-playground-base:${KYUUBI_VERSION} \
-  "${SELF_DIR}/image" $@
+  "${SELF_DIR}" $@
 
 ${BUILD_CMD} \
   --build-arg APACHE_MIRROR=${APACHE_MIRROR} \
@@ -52,7 +50,7 @@ ${BUILD_CMD} \
   --build-arg HADOOP_VERSION=${HADOOP_VERSION} \
   --file "${SELF_DIR}/image/kyuubi-playground-hadoop.Dockerfile" \
   --tag nekyuubi/kyuubi-playground-hadoop:${KYUUBI_VERSION} \
-  "${SELF_DIR}/image" $@
+  "${SELF_DIR}" $@
 
 ${BUILD_CMD} \
   --build-arg APACHE_MIRROR=${APACHE_MIRROR} \
@@ -61,7 +59,7 @@ ${BUILD_CMD} \
   --build-arg HIVE_VERSION=${HIVE_VERSION} \
   --file "${SELF_DIR}/image/kyuubi-playground-metastore.Dockerfile" \
   --tag nekyuubi/kyuubi-playground-metastore:${KYUUBI_VERSION} \
-  "${SELF_DIR}/image" $@
+  "${SELF_DIR}" $@
 
 ${BUILD_CMD} \
   --build-arg APACHE_MIRROR=${APACHE_MIRROR} \
@@ -76,7 +74,7 @@ ${BUILD_CMD} \
   --build-arg SPARK_BINARY_VERSION=${SPARK_BINARY_VERSION} \
   --file "${SELF_DIR}/image/kyuubi-playground-spark.Dockerfile" \
   --tag nekyuubi/kyuubi-playground-spark:${KYUUBI_VERSION} \
-  "${SELF_DIR}/image" $@
+  "${SELF_DIR}" $@
 
 ${BUILD_CMD} \
   --build-arg APACHE_MIRROR=${APACHE_MIRROR} \
@@ -86,4 +84,4 @@ ${BUILD_CMD} \
   --build-arg KYUUBI_HADOOP_VERSION=${KYUUBI_HADOOP_VERSION} \
   --file "${SELF_DIR}/image/kyuubi-playground-kyuubi.Dockerfile" \
   --tag nekyuubi/kyuubi-playground-kyuubi:${KYUUBI_VERSION} \
-  "${SELF_DIR}/image" $@
+  "${SELF_DIR}" $@
