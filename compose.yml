@@ -103,7 +103,7 @@ services:
       - ./app/kyuubi/conf/hive-site.xml:/etc/hive/conf/hive-site.xml
       - ./app/spark/conf/spark-defaults.conf:/etc/spark/conf/spark-defaults.conf
       - ./app/kyuubi/conf/kyuubi-defaults.conf:/etc/kyuubi/conf/kyuubi-defaults.conf
-      - ./app/kyuubi/conf/kyuubi-log4j2.xml:/etc/kyuubi/conf/log4j2.xml
+      - ./app/kyuubi/conf/log4j2.xml:/etc/kyuubi/conf/log4j2.xml
       - ./db/postgres/dump/tpc/load-dataset-tpcds-tiny.sql:/opt/load_data/load-dataset-tpcds-tiny.sql
       - ./db/postgres/dump/tpc/load-dataset-tpch-tiny.sql:/opt/load_data/load-dataset-tpch-tiny.sql
 
@@ -152,6 +152,8 @@ services:
         - "traefik.http.routers.sparkmaster.entrypoints=web"
         - "traefik.http.routers.sparkmaster.service=sparkmaster"
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
+    volumes:
+      - "./app/spark:/app/spark"
 
   sparkworker:
     image: ${SPARK_IMAGE}
@@ -177,6 +179,8 @@ services:
         - "traefik.http.routers.sparkworker.service=sparkworker"
         - "traefik.http.services.sparkworker.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
+    volumes:
+      - "./app/spark:/app/spark"
 
 
   zookeeper:
