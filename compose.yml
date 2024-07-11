@@ -93,11 +93,15 @@ services:
         - "traefik.http.routers.kyuubi.entrypoints=web"
         - "traefik.http.routers.kyuubi.service=kyuubi"
         - "traefik.http.services.kyuubi.loadbalancer.server.port=$SPARK_UI_PORT"
+        - "traefik.http.routers.kyuubi1.rule=Host(`$KYUUBI_REST_DNS`)"
+        - "traefik.http.routers.kyuubi1.entrypoints=web"
+        - "traefik.http.routers.kyuubi1.service=kyuubi"
+        - "traefik.http.services.kyuubi1.loadbalancer.server.port=$KYUUBI_FRONTEND_REST_PORT"
     command: kyuubi
     volumes:
       - ./app/kyuubi/conf/core-site.xml:/etc/hadoop/conf/core-site.xml
       - ./app/kyuubi/conf/hive-site.xml:/etc/hive/conf/hive-site.xml
-      - .//app/spark/conf/spark-defaults.conf:/etc/spark/conf/spark-defaults.conf
+      - ./app/spark/conf/spark-defaults.conf:/etc/spark/conf/spark-defaults.conf
       - ./app/kyuubi/conf/kyuubi-defaults.conf:/etc/kyuubi/conf/kyuubi-defaults.conf
       - ./app/kyuubi/conf/kyuubi-log4j2.xml:/etc/kyuubi/conf/log4j2.xml
       - ./db/postgres/dump/tpc/load-dataset-tpcds-tiny.sql:/opt/load_data/load-dataset-tpcds-tiny.sql

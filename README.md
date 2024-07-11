@@ -1,7 +1,7 @@
 
-## <p align="center">POC using Apache Spark / Apache Hadoop / Apache Kyuubi / Apache Zeppelin / Hive on MariaDB / Docker Swarm</p>
+## <p align="center">POC using Apache Spark / Minio / Apache Kyuubi / Apache Zeppelin / Hive on Postgres / Docker Swarm</p>
   
-Apache Spark and Kyuubi demo with Hadoop HDFS, Zeppelin notrbook, Hive on Mysql running on docker Swarm as orchestrator.
+Apache Spark and Kyuubi demo with Minio S3, Zeppelin notebook, Hive on Postgres running on docker Swarm as orchestrator.
     
 ## 🧐 Features    
 - Using docker compose version 2
@@ -18,9 +18,9 @@ Apache Spark and Kyuubi demo with Hadoop HDFS, Zeppelin notrbook, Hive on Mysql 
 - [Apache Hadoop](https://hadoop.apache.org/)
 - [Apache Hive](https://hive.apache.org/)
 - [Apache Zeppelin](https://zeppelin.apache.org/)
-- [MariaDB](https://mariadb.org/)
+- [Postgres](https://www.postgresql.org/)
 
-This swarm stack is fully compatible with raspberry PI, base images are also built on ARRCH64 architecture. Here is the visualizer result using 3 raspberry PI4 cluster
+This swarm stack is fully compatible with raspberry PI, base images are also built on ARRCH64 architecture. Here is the visualizer result using 4 raspberry PI5 cluster
 
 ![Final result](images/image01.png)
 
