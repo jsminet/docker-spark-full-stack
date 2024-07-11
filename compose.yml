@@ -154,7 +154,8 @@ services:
         - "traefik.http.routers.sparkmaster.service=sparkmaster"
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     volumes:
-      - "./app/spark:/app/spark"
+      - ./app/kyuubi:/app/kyuubi
+      - ./app/spark:/app/spark
 
   sparkworker:
     image: ${SPARK_IMAGE}
@@ -181,7 +182,8 @@ services:
         - "traefik.http.services.sparkworker.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
-      - "./app/spark:/app/spark"
+      - ./app/kyuubi:/app/kyuubi
+      - ./app/spark:/app/spark
 
 
   zookeeper:
