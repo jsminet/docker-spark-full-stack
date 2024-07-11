@@ -27,7 +27,7 @@
     <value>s3a://spark-bucket/</value>
 </property>
 
-  <property>
+  <!--property>
     <name>hadoop.proxyuser.root.hosts</name>
     <value>*</value>
   </property>
@@ -53,7 +53,7 @@
   <property>
     <name>hadoop.proxyuser.zeppelin.users</name>
     <value>*</value>
-  </property>
+  </property-->
 
   <property>
     <name>fs.s3a.access.key</name>
