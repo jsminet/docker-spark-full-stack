@@ -104,6 +104,7 @@ services:
     command: kyuubi
     volumes:
       - ./app/kyuubi:/app/kyuubi
+      - ./app/spark:/app/spark
       - ./db/postgres/dump/tpc/load-dataset-tpcds-tiny.sql:/opt/load_data/load-dataset-tpcds-tiny.sql
       - ./db/postgres/dump/tpc/load-dataset-tpch-tiny.sql:/opt/load_data/load-dataset-tpch-tiny.sql
 
