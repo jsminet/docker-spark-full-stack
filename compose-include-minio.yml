@@ -38,7 +38,7 @@ services:
         - traefik.http.services.minio.loadbalancer.server.port=$MINIO_CONSOLE_PORT_NUMBER
         - traefik.http.routers.minio1.entrypoints=web
         - traefik.http.routers.minio1.rule=Host(`$MINIO_S3_ENDPOINT_DNS`)
-        - traefik.http.routers.minio1.service=minio
+        - traefik.http.routers.minio1.service=minio1
         - traefik.http.services.minio1.loadbalancer.server.port=$MINIO_API_PORT_NUMBER
     # AVOID Error: grid: http://minio1:9000 re-connecting to ws://minio2:9000/minio/grid/v1: dial tcp 10.0.78.8:9000: connect: 
     #              connection refused (*net.OpError) Sleeping 1.173s (3) (*fmt.wrapError)
