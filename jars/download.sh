@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 MAVEN_MIRROR=https://repo1.maven.org/maven2
 KYUUBI_VERSION=1.9.1

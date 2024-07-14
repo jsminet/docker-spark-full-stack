@@ -102,6 +102,7 @@ services:
     volumes:
       - spark351:/opt/spark
       - ./app/kyuubi/conf:$KYUUBI_HOME/conf
+      - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:$SPARK_HOME/jars/aws-java-sdk-bundle-1.12.757.jar
       - ./db/postgres/dump/tpc/load-dataset-tpcds-tiny.sql:/opt/load_data/load-dataset-tpcds-tiny.sql
       - ./db/postgres/dump/tpc/load-dataset-tpch-tiny.sql:/opt/load_data/load-dataset-tpch-tiny.sql
 
@@ -178,6 +179,8 @@ services:
     volumes:
       - spark351:/opt/spark
       - ./app/spark/conf:$SPARK_HOME/conf
+      - ./jars/spark/postgresql-42.7.3.jar:$SPARK_HOME/jars/postgresql-42.7.3.jar
+      - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:$SPARK_HOME/jars/aws-java-sdk-bundle-1.12.757.jar
 
 
   zookeeper:
