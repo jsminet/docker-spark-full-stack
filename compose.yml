@@ -114,7 +114,7 @@ services:
     hostname: metastore
     deploy:
       endpoint_mode: dnsrr
-      <<: *high-resources
+      <<: *mid-resources
       placement:
         constraints:
           - node.role == manager
