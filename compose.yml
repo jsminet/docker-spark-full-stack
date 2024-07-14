@@ -102,6 +102,7 @@ services:
     volumes:
       - spark351:/opt/spark
       - ./app/kyuubi/conf:$KYUUBI_HOME/conf
+      - ./app/spark/conf:$SPARK_HOME/conf
       - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:$KYUUBI_HOME/jars/aws-java-sdk-bundle-1.12.757.jar
       - ./jars/kyuubi/hadoop-aws-3.3.6.jar:$KYUUBI_HOME/jars/hadoop-aws-3.3.6.jar
       - ./jars/kyuubi/hadoop-cloud-storage-3.3.6.jar:$KYUUBI_HOME/jars/hadoop-cloud-storage-3.3.6.jar
