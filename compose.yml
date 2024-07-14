@@ -201,7 +201,6 @@ services:
     build: ${ZEPPELIN_GIT_URL}
     environment:
       - SPARK_MASTER=spark://$SPARK_MASTER_HOST:$SPARK_MASTER_PORT
-      - #HADOOP_CONF_DIR=$KYUUBI_CONF_DIR
       - SPARK_HOME
       - ZEPPELIN_CONF_DIR
       - ZEPPELIN_LOG_DIR
