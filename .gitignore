@@ -3,7 +3,4 @@ app/spark/work/*
 app/kyuubi/logs/*
 app/kyuubi/work/*
 app/zeppelin/logs/*
-db/mysql/dump/foodmart/001-foodmart-mysql.sql.gz
-jars/catalog/iceberg/*.jar
-jars/drivers/mysql/*.jar
-jars/drivers/hive3/*.jar
+jars/**/*.jar

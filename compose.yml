@@ -73,16 +73,13 @@ services:
       - "./db/postgres/dump/hive/3.1.0:/docker-entrypoint-initdb.d"
 
   kyuubi:
-    image: nekyuubi/kyuubi-playground-kyuubi:${KYUUBI_VERSION}
+    image: $KYUUBI_IMAGE:$KYUUBI_VERSION
     build: 
       context: docker
       dockerfile: kyuubi-playground-kyuubi.Dockerfile
     hostname: kyuubi
     environment:
-      - KYUUBI_CONF_DIR
-      - KYUUBI_LOG_DIR
-      - SPARK_CONF_DIR
-      - KYUUBI_WORK_DIR_ROOT
+      - SPARK_HOME
     deploy:
       endpoint_mode: dnsrr
       <<: *high-resources
@@ -104,8 +101,8 @@ services:
         - "traefik.http.services.kyuubi1.loadbalancer.server.port=$KYUUBI_FRONTEND_REST_PORT"
     command: kyuubi
     volumes:
-      - ./app/kyuubi:/app/kyuubi
-      - ./app/spark:/app/spark
+      - spark351:/opt/spark
+      - ./app/kyuubi/conf:$KYUUBI_HOME/conf
       - ./db/postgres/dump/tpc/load-dataset-tpcds-tiny.sql:/opt/load_data/load-dataset-tpcds-tiny.sql
       - ./db/postgres/dump/tpc/load-dataset-tpch-tiny.sql:/opt/load_data/load-dataset-tpch-tiny.sql
 
@@ -131,15 +128,13 @@ services:
       - ./app/kyuubi/conf/hive-site.xml:/etc/hive/conf/hive-site.xml
 
   sparkmaster:
-    image: ${SPARK_IMAGE}
+    image: $SPARK_IMAGE:$SPARK_VERSION
     build: $KYUUBI_GIT_URL
     hostname: sparkmaster
     environment:
       - SPARK_MASTER_PORT
       - SPARK_MASTER_WEBUI_PORT
-      - SPARK_CONF_DIR
-      - SPARK_LOG_DIR
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
+      - SPARK_DRIVER_MEMORY
     deploy:
       endpoint_mode: dnsrr
       <<: *mid-resources
@@ -156,19 +151,16 @@ services:
         - "traefik.http.routers.sparkmaster.service=sparkmaster"
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     volumes:
-      - ./app/kyuubi:/app/kyuubi
-      - ./app/spark:/app/spark
+      - spark351:/opt/spark
+      - ./app/spark/conf:$SPARK_HOME/conf
 
   sparkworker:
-    image: ${SPARK_IMAGE}
+    image: $SPARK_IMAGE:$SPARK_VERSION
     build: $KYUUBI_GIT_URL
     hostname: "sparkworker{{.Task.Slot}}"
     environment:
       - SPARK_WORKER_CORES
       - SPARK_WORKER_MEMORY
-      - SPARK_CONF_DIR
-      - SPARK_LOG_DIR
-      - "HADOOP_CONF_DIR=$KYUUBI_CONF_DIR"
     deploy:
       mode: replicated
       replicas: 3
@@ -185,8 +177,8 @@ services:
         - "traefik.http.services.sparkworker.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
-      - ./app/kyuubi:/app/kyuubi
-      - ./app/spark:/app/spark
+      - spark351:/opt/spark
+      - ./app/spark/conf:$SPARK_HOME/conf
 
 
   zookeeper:
@@ -231,7 +223,7 @@ services:
     volumes:
       - "./app/zeppelin:/app/zeppelin"
       - "./app/kyuubi:/app/kyuubi"
-      - "spark3:/opt/spark"
+      - spark351:/opt/spark
 
   swarmpit:
     image: swarmpit/swarmpit:latest
@@ -309,6 +301,6 @@ services:
       <<: *low-resources
 
 volumes: 
-  spark3:
+  spark351:
   couchdb-data:
   influx-data:
