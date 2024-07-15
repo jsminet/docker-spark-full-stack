@@ -155,7 +155,7 @@ services:
         - "traefik.http.routers.sparkmaster.service=sparkmaster"
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     volumes:
-      - spark351:/opt/spark
+      - spark351:/opt/spark-3.5.1-bin-hadoop3
       - ./app/spark/conf:$SPARK_HOME/conf
       - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:$SPARK_HOME/jars/aws-java-sdk-bundle-1.12.757.jar
       - ./jars/spark/postgresql-42.7.3.jar:$SPARK_HOME/jars/postgresql-42.7.3.jar
