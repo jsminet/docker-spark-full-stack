@@ -161,10 +161,10 @@ services:
       - ./jars/spark/postgresql-42.7.3.jar:/opt/spark-3.5.1-bin-hadoop3/jars/postgresql-42.7.3.jar
       - ./jars/spark/hadoop-aws-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-aws-3.3.4.jar
       - ./jars/spark/hadoop-cloud-storage-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-cloud-storage-3.3.4.jar
-      - ./jars/spark/iceberg-spark-runtime-3.5_2.13-1.5.2.jar:/opt/spark-3.5.1-bin-hadoop3/jars/iceberg-spark-runtime-3.5_2.13-1.5.2.jar
-      - ./jars/spark/kyuubi-spark-connector-tpcds_2.13-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpcds_2.13-1.9.1.jar
-      - ./jars/spark/kyuubi-spark-connector-tpch_2.13-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpch_2.13-1.9.1.jar
-      - ./jars/spark/spark-hadoop-cloud_2.13-3.5.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/spark-hadoop-cloud_2.13-3.5.1.jar
+      - ./jars/spark/iceberg-spark-runtime-3.5_2.12-1.5.2.jar:/opt/spark-3.5.1-bin-hadoop3/jars/iceberg-spark-runtime-3.5_2.12-1.5.2.jar
+      - ./jars/spark/kyuubi-spark-connector-tpcds_2.12-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpcds_2.12-1.9.1.jar
+      - ./jars/spark/kyuubi-spark-connector-tpch_2.12-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpch_2.12-1.9.1.jar
+      - ./jars/spark/spark-hadoop-cloud_2.12-3.5.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/spark-hadoop-cloud_2.12-3.5.1.jar
 
   sparkworker:
     image: $SPARK_IMAGE:$SPARK_VERSION
@@ -195,10 +195,10 @@ services:
       - ./jars/spark/postgresql-42.7.3.jar:/opt/spark-3.5.1-bin-hadoop3/jars/postgresql-42.7.3.jar
       - ./jars/spark/hadoop-aws-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-aws-3.3.4.jar
       - ./jars/spark/hadoop-cloud-storage-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-cloud-storage-3.3.4.jar
-      - ./jars/spark/iceberg-spark-runtime-3.5_2.13-1.5.2.jar:/opt/spark-3.5.1-bin-hadoop3/jars/iceberg-spark-runtime-3.5_2.13-1.5.2.jar
-      - ./jars/spark/kyuubi-spark-connector-tpcds_2.13-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpcds_2.13-1.9.1.jar
-      - ./jars/spark/kyuubi-spark-connector-tpch_2.13-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpch_2.13-1.9.1.jar
-      - ./jars/spark/spark-hadoop-cloud_2.13-3.5.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/spark-hadoop-cloud_2.13-3.5.1.jar
+      - ./jars/spark/iceberg-spark-runtime-3.5_2.12-1.5.2.jar:/opt/spark-3.5.1-bin-hadoop3/jars/iceberg-spark-runtime-3.5_2.12-1.5.2.jar
+      - ./jars/spark/kyuubi-spark-connector-tpcds_2.12-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpcds_2.12-1.9.1.jar
+      - ./jars/spark/kyuubi-spark-connector-tpch_2.12-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpch_2.12-1.9.1.jar
+      - ./jars/spark/spark-hadoop-cloud_2.12-3.5.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/spark-hadoop-cloud_2.12-3.5.1.jar
 
   zookeeper:
     image: zookeeper:latest
