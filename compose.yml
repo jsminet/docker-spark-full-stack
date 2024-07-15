@@ -157,6 +157,14 @@ services:
     volumes:
       - spark351:/opt/spark
       - ./app/spark/conf:$SPARK_HOME/conf
+      - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:$SPARK_HOME/jars/aws-java-sdk-bundle-1.12.757.jar
+      - ./jars/spark/postgresql-42.7.3.jar:$SPARK_HOME/jars/postgresql-42.7.3.jar
+      - ./jars/spark/hadoop-aws-3.3.4.jar:$SPARK_HOME/jars/hadoop-aws-3.3.4.jar
+      - ./jars/spark/hadoop-cloud-storage-3.3.4.jar:$SPARK_HOME/jars/hadoop-cloud-storage-3.3.4.jar
+      - ./jars/spark/iceberg-spark-runtime-3.5_2.13-1.5.2.jar:$SPARK_HOME/jars/iceberg-spark-runtime-3.5_2.13-1.5.2.jar
+      - ./jars/spark/kyuubi-spark-connector-tpcds_2.13-1.9.1.jar:$SPARK_HOME/jars/kyuubi-spark-connector-tpcds_2.13-1.9.1.jar
+      - ./jars/spark/kyuubi-spark-connector-tpch_2.13-1.9.1.jar:$SPARK_HOME/jars/kyuubi-spark-connector-tpch_2.13-1.9.1.jar
+      - ./jars/spark/spark-hadoop-cloud_2.13-3.5.1.jar:$SPARK_HOME/jars/spark-hadoop-cloud_2.13-3.5.1.jar
 
   sparkworker:
     image: $SPARK_IMAGE:$SPARK_VERSION
