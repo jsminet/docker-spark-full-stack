@@ -80,6 +80,7 @@ services:
     hostname: kyuubi
     environment:
       - SPARK_HOME
+      - KYUUBI_LOG_DIR
     deploy:
       endpoint_mode: dnsrr
       <<: *high-resources
@@ -164,7 +165,6 @@ services:
     environment:
       - SPARK_WORKER_CORES
       - SPARK_WORKER_MEMORY
-      - SPARK_LOG_DIR
     deploy:
       mode: replicated
       replicas: 3
