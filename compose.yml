@@ -164,6 +164,7 @@ services:
     environment:
       - SPARK_WORKER_CORES
       - SPARK_WORKER_MEMORY
+      - SPARK_LOG_DIR
     deploy:
       mode: replicated
       replicas: 3
