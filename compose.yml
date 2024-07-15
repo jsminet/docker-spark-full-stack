@@ -155,8 +155,8 @@ services:
         - "traefik.http.routers.sparkmaster.service=sparkmaster"
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     volumes:
-      - spark351:/opt/spark-3.5.1-bin-hadoop3
-      - ./app/spark/conf:/opt/spark-3.5.1-bin-hadoop3/conf
+      - spark351:$SPARK_HOME
+      - ./app/spark/conf:$SPARK_HOME/conf
       - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:/opt/spark-3.5.1-bin-hadoop3/jars/aws-java-sdk-bundle-1.12.757.jar
       - ./jars/spark/postgresql-42.7.3.jar:/opt/spark-3.5.1-bin-hadoop3/jars/postgresql-42.7.3.jar
       - ./jars/spark/hadoop-aws-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-aws-3.3.4.jar
@@ -189,7 +189,8 @@ services:
         - "traefik.http.services.sparkworker.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
-      - spark351:/opt/spark-3.5.1-bin-hadoop3
+      - spark351:$SPARK_HOME
+      - ./app/spark/conf:$SPARK_HOME/conf
       - ./app/spark/conf:/opt/spark-3.5.1-bin-hadoop3/conf
       - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:/opt/spark-3.5.1-bin-hadoop3/jars/aws-java-sdk-bundle-1.12.757.jar
       - ./jars/spark/postgresql-42.7.3.jar:/opt/spark-3.5.1-bin-hadoop3/jars/postgresql-42.7.3.jar
@@ -239,9 +240,9 @@ services:
         - "traefik.http.routers.zeppelin2.service=zeppelin2"
         - "traefik.http.services.zeppelin2.loadbalancer.server.port=$SPARK_UI_PORT"
     volumes:
+      - spark351:$SPARK_HOME
       - "./app/zeppelin:/app/zeppelin"
       - "./app/kyuubi:/app/kyuubi"
-      #- spark351:/opt/spark
 
   swarmpit:
     image: swarmpit/swarmpit:latest
