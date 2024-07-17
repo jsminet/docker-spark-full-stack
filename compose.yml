@@ -101,14 +101,11 @@ services:
         - "traefik.http.routers.kyuubi1.service=kyuubi"
         - "traefik.http.services.kyuubi1.loadbalancer.server.port=$KYUUBI_FRONTEND_REST_PORT"
     volumes:
-      - spark351:$SPARK_HOME
+      - spark351:$SPARK_HOME:ro
       - ./app/kyuubi/conf:$KYUUBI_HOME/conf
-      - ./app/spark/conf:$SPARK_HOME/conf
-      - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:$KYUUBI_HOME/jars/aws-java-sdk-bundle-1.12.757.jar
-      - ./jars/kyuubi/hadoop-aws-3.3.6.jar:$KYUUBI_HOME/jars/hadoop-aws-3.3.6.jar
-      - ./jars/kyuubi/hadoop-cloud-storage-3.3.6.jar:$KYUUBI_HOME/jars/hadoop-cloud-storage-3.3.6.jar
-      - ./db/postgres/dump/tpc/load-dataset-tpcds-tiny.sql:/opt/load_data/load-dataset-tpcds-tiny.sql
-      - ./db/postgres/dump/tpc/load-dataset-tpch-tiny.sql:/opt/load_data/load-dataset-tpch-tiny.sql
+      - ./app/spark/conf:$SPARK_HOME/conf:ro
+      - ./jars:$KYUUBI_HOME/extra_jars:ro
+      - ./db/postgres/dump/tpc:/opt/load_data
 
   metastore:
     image: nekyuubi/kyuubi-playground-metastore:${KYUUBI_VERSION}
@@ -157,14 +154,7 @@ services:
     volumes:
       - spark351:$SPARK_HOME
       - ./app/spark/conf:$SPARK_HOME/conf
-      - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:/opt/spark-3.5.1-bin-hadoop3/jars/aws-java-sdk-bundle-1.12.757.jar
-      - ./jars/spark/postgresql-42.7.3.jar:/opt/spark-3.5.1-bin-hadoop3/jars/postgresql-42.7.3.jar
-      - ./jars/spark/hadoop-aws-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-aws-3.3.4.jar
-      - ./jars/spark/hadoop-cloud-storage-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-cloud-storage-3.3.4.jar
-      - ./jars/spark/iceberg-spark-runtime-3.5_2.12-1.5.2.jar:/opt/spark-3.5.1-bin-hadoop3/jars/iceberg-spark-runtime-3.5_2.12-1.5.2.jar
-      - ./jars/spark/kyuubi-spark-connector-tpcds_2.12-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpcds_2.12-1.9.1.jar
-      - ./jars/spark/kyuubi-spark-connector-tpch_2.12-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpch_2.12-1.9.1.jar
-      - ./jars/spark/spark-hadoop-cloud_2.12-3.5.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/spark-hadoop-cloud_2.12-3.5.1.jar
+      - ./jars:$SPARK_HOME/extra_jars
 
   sparkworker:
     image: $SPARK_IMAGE:$SPARK_VERSION
@@ -189,17 +179,9 @@ services:
         - "traefik.http.services.sparkworker.loadbalancer.server.port=$SPARK_WORKER_WEBUI_PORT"
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
-      - spark351:$SPARK_HOME
-      - ./app/spark/conf:$SPARK_HOME/conf
-      - ./app/spark/conf:/opt/spark-3.5.1-bin-hadoop3/conf
-      - ./jars/common/aws-java-sdk-bundle-1.12.757.jar:/opt/spark-3.5.1-bin-hadoop3/jars/aws-java-sdk-bundle-1.12.757.jar
-      - ./jars/spark/postgresql-42.7.3.jar:/opt/spark-3.5.1-bin-hadoop3/jars/postgresql-42.7.3.jar
-      - ./jars/spark/hadoop-aws-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-aws-3.3.4.jar
-      - ./jars/spark/hadoop-cloud-storage-3.3.4.jar:/opt/spark-3.5.1-bin-hadoop3/jars/hadoop-cloud-storage-3.3.4.jar
-      - ./jars/spark/iceberg-spark-runtime-3.5_2.12-1.5.2.jar:/opt/spark-3.5.1-bin-hadoop3/jars/iceberg-spark-runtime-3.5_2.12-1.5.2.jar
-      - ./jars/spark/kyuubi-spark-connector-tpcds_2.12-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpcds_2.12-1.9.1.jar
-      - ./jars/spark/kyuubi-spark-connector-tpch_2.12-1.9.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/kyuubi-spark-connector-tpch_2.12-1.9.1.jar
-      - ./jars/spark/spark-hadoop-cloud_2.12-3.5.1.jar:/opt/spark-3.5.1-bin-hadoop3/jars/spark-hadoop-cloud_2.12-3.5.1.jar
+      - spark351:$SPARK_HOME:ro
+      - ./app/spark/conf:$SPARK_HOME/conf:ro
+      - ./jars:$SPARK_HOME/extra_jars:ro
 
   zookeeper:
     image: zookeeper:latest
@@ -211,7 +193,7 @@ services:
         constraints:
           - node.role == manager
     volumes: 
-      - "./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
+      - ./app/zookeeper/conf:$ZOOKEEPER_CONF_DIR
 
   zeppelin:
     image: $ZEPPELIN_IMAGE:$ZEPPELIN_VERSION
@@ -240,9 +222,11 @@ services:
         - "traefik.http.routers.zeppelin2.service=zeppelin2"
         - "traefik.http.services.zeppelin2.loadbalancer.server.port=$SPARK_UI_PORT"
     volumes:
-      - spark351:$SPARK_HOME
-      - "./app/zeppelin:/app/zeppelin"
-      - "./app/kyuubi:/app/kyuubi"
+      - spark351:$SPARK_HOME:ro
+      - ./app/spark/conf:$SPARK_HOME/conf:ro
+      - ./jars:$SPARK_HOME/extra_jars:ro
+      - ./app/zeppelin:/app/zeppelin
+      - ./app/kyuubi:/app/kyuubi
 
   swarmpit:
     image: swarmpit/swarmpit:latest

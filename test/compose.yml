@@ -1,0 +1,57 @@
+services:
+  kyuubi:
+    image: $KYUUBI_IMAGE:$KYUUBI_VERSION
+    hostname: kyuubi
+    environment:
+      - SPARK_HOME
+      - KYUUBI_LOG_DIR
+    deploy:
+      endpoint_mode: dnsrr
+    volumes:
+      - spark351:$SPARK_HOME:ro
+      - ../app/kyuubi/conf:$KYUUBI_HOME/conf
+      - ../app/spark/conf:$SPARK_HOME/conf:ro
+      - ../jars:$KYUUBI_HOME/extra_jars:ro
+      - ../db/postgres/dump/tpc:/opt/load_data
+
+  sparkmaster:
+    image: $SPARK_IMAGE:$SPARK_VERSION
+    hostname: sparkmaster
+    environment:
+      - SPARK_MASTER_PORT
+      - SPARK_MASTER_WEBUI_PORT
+      - SPARK_DRIVER_MEMORY
+    deploy:
+      endpoint_mode: dnsrr
+    volumes:
+      - spark351:$SPARK_HOME
+      - ../app/spark/conf:$SPARK_HOME/conf
+      - ../jars:$SPARK_HOME/extra_jars
+
+
+  sparkworker:
+    image: $SPARK_IMAGE:$SPARK_VERSION
+    hostname: "sparkworker{{.Task.Slot}}"
+    environment:
+      - SPARK_WORKER_CORES
+      - SPARK_WORKER_MEMORY
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+    volumes:
+      - spark351:$SPARK_HOME:ro
+      - ../app/spark/conf:$SPARK_HOME/conf:ro
+      - ../jars:$SPARK_HOME/extra_jars:ro
+
+  zookeeper:
+    image: zookeeper:latest
+    hostname: zookeeper
+    deploy:
+      endpoint_mode: dnsrr
+    volumes: 
+      - "../app/zookeeper/conf:$ZOOKEEPER_CONF_DIR"
+
+volumes: 
+  spark351:
+  sparkextra:
