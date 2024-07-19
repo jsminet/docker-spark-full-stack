@@ -107,9 +107,8 @@ services:
         - "traefik.http.services.kyuubi1.loadbalancer.server.port=$KYUUBI_FRONTEND_REST_PORT"
     volumes:
       - spark351:$SPARK_HOME
-      - ./app/kyuubi/conf:/app/kyuubi/conf
-      - ./app/spark/conf:/app/spark/conf
-      - ./app/kyuubi/jars:/app/kyuubi/jars
+      - ./app/kyuubi:/app/kyuubi
+      - ./app/spark:/app/spark
       - ./db/postgres/dump/tpc:/opt/load_data
 
   metastore:
@@ -161,8 +160,7 @@ services:
         - "traefik.http.services.sparkmaster.loadbalancer.server.port=$SPARK_MASTER_WEBUI_PORT"
     volumes:
       - spark351:$SPARK_HOME
-      - ./app/spark/conf:/app/spark/conf
-      - ./app/spark/jars:/app/spark/jars
+      - ./app/spark:/app/spark
 
   sparkworker:
     image: $SPARK_IMAGE:$SPARK_VERSION
@@ -191,8 +189,7 @@ services:
     command: worker spark://sparkmaster:$SPARK_MASTER_PORT
     volumes:
       - spark351:$SPARK_HOME
-      - ./app/spark/conf:/app/spark/conf
-      - ./app/spark/jars:/app/spark/jars
+      - ./app/spark:/app/spark
 
   zookeeper:
     image: zookeeper:latest
@@ -234,8 +231,7 @@ services:
         - "traefik.http.services.zeppelin2.loadbalancer.server.port=$SPARK_UI_PORT"
     volumes:
       - spark351:$SPARK_HOME
-      - ./app/spark/conf:$SPARK_HOME/conf
-      - ./jars:$SPARK_HOME/extra_jars
+      - ./app/spark:/app/spark
       - ./app/zeppelin:/app/zeppelin
       - ./app/kyuubi:/app/kyuubi
 
