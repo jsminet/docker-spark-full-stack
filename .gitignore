@@ -3,4 +3,5 @@ app/spark/work/*
 app/kyuubi/logs/*
 app/kyuubi/work/*
 app/zeppelin/logs/*
-jars/**/*.jar
+app/spark/jars/**/*.jar
+app/kyuubi/jars/**/*.jar
