@@ -169,6 +169,7 @@ services:
       - SPARK_HOME
       - SPARK_CONF_DIR
       - SPARK_LOG_DIR
+      - SPARK_WORKER_DIR
     deploy:
       mode: replicated
       replicas: 3
