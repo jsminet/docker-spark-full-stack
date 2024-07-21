@@ -74,9 +74,6 @@ services:
 
   kyuubi:
     image: $KYUUBI_IMAGE:$KYUUBI_VERSION
-    build: 
-      context: docker
-      dockerfile: kyuubi-playground-kyuubi.Dockerfile
     hostname: kyuubi
     environment:
       - SPARK_HOME
@@ -136,7 +133,6 @@ services:
 
   sparkmaster:
     image: $SPARK_IMAGE:$SPARK_VERSION
-    build: $KYUUBI_GIT_URL
     hostname: sparkmaster
     environment:
       - SPARK_MASTER_PORT
@@ -166,7 +162,6 @@ services:
 
   sparkworker:
     image: $SPARK_IMAGE:$SPARK_VERSION
-    build: $KYUUBI_GIT_URL
     hostname: "sparkworker{{.Task.Slot}}"
     environment:
       - SPARK_WORKER_CORES
