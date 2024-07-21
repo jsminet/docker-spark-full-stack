@@ -86,6 +86,7 @@ services:
       - KYUUBI_CONF_DIR
       - KYUUBI_PID_DIR
       - KYUUBI_WORK_DIR_ROOT
+# NO EXTRA JARS in Apache Kyuubi jars directory !!!!
       - KYUUBI_JAR_DIR
     deploy:
       endpoint_mode: dnsrr
