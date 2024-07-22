@@ -1,8 +1,8 @@
 x-mid-resources: &mid-resources
   resources:
     limits:
-      cpus: '0.5'
-      memory: 256M
+      cpus: '1'
+      memory: 512M
     reservations:
       cpus: '0.25'
       memory: 128M
