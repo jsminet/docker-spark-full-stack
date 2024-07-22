@@ -79,6 +79,7 @@ services:
       - SPARK_HOME
       - SPARK_CONF_DIR
       - SPARK_LOG_DIR
+      - SPARK_WORKER_DIR
       - KYUUBI_LOG_DIR
       - KYUUBI_CONF_DIR
       - KYUUBI_PID_DIR
@@ -141,6 +142,7 @@ services:
       - SPARK_HOME
       - SPARK_CONF_DIR
       - SPARK_LOG_DIR
+      - SPARK_WORKER_DIR
     deploy:
       endpoint_mode: dnsrr
       <<: *mid-resources
