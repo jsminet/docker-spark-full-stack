@@ -25,6 +25,15 @@ x-high-resources: &high-resources
       cpus: '1'
       memory: 256M
 
+x-very-high-resources: &very-high-resources
+  resources:
+    limits:
+      cpus: '3'
+      memory: 6G
+    reservations:
+      cpus: '1'
+      memory: 1G
+
 include:
   - compose-include-minio.yml
 services:
@@ -88,7 +97,7 @@ services:
       - KYUUBI_JAR_DIR
     deploy:
       endpoint_mode: dnsrr
-      <<: *high-resources
+      <<: *very-high-resources
       placement:
         constraints:
           - node.role == manager
@@ -145,7 +154,7 @@ services:
       - SPARK_WORKER_DIR
     deploy:
       endpoint_mode: dnsrr
-      <<: *mid-resources
+      <<: *high-resources
       placement:
         constraints:
           - node.role == manager
@@ -176,7 +185,7 @@ services:
       mode: replicated
       replicas: 3
       endpoint_mode: dnsrr
-      <<: *high-resources
+      <<: *very-high-resources
       placement:
         constraints:
           - node.role == worker
