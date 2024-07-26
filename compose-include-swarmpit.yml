@@ -1,0 +1,93 @@
+x-low-resources: &low-resources
+  resources:
+    limits:
+      cpus: '0.3'
+      memory: 128M
+    reservations:
+      cpus: '0.15'
+      memory: 64M
+
+x-mid-resources: &mid-resources
+  resources:
+    limits:
+      cpus: '0.5'
+      memory: 256M
+    reservations:
+      cpus: '0.25'
+      memory: 128M
+
+services:
+  swarmpit:
+    image: swarmpit/swarmpit:latest
+    hostname: swarmpit
+    environment:
+      - SWARMPIT_DB=http://$COUCHDB_USER:$COUCHDB_PASSWORD@couchdb:5984
+      - SWARMPIT_INFLUXDB=http://influxdb:8086
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.swarmpit.rule=Host(`$SWARMPIT_DNS`)"
+        - "traefik.http.routers.swarmpit.entrypoints=web"
+        - "traefik.http.routers.swarmpit.service=swarmpit"
+        - "traefik.http.services.swarmpit.loadbalancer.server.port=$SWARMPIT_HTTP_PORT"
+
+  couchdb:
+    image: couchdb:3.3.3
+    hostname: couchdb
+    environment:   
+        - COUCHDB_USER
+        - COUCHDB_PASSWORD
+    volumes:
+      - couchdb-data:/opt/couchdb/data
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *low-resources
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.couchdb.rule=Host(`$COUCHDB_DNS`)"
+        - "traefik.http.routers.couchdb.entrypoints=web"
+        - "traefik.http.routers.couchdb.service=couchdb"
+        - "traefik.http.services.couchdb.loadbalancer.server.port=$COUCHDB_HTTP_PORT"
+
+  influxdb:
+    image: influxdb:1.8.10
+    hostname: influxdb
+    volumes:
+      - influx-data:/var/lib/influxdb
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.influxdb.rule=Host(`$INFLUXDB_DNS`)"
+        - "traefik.http.routers.influxdb.entrypoints=web"
+        - "traefik.http.routers.influxdb.service=influxdb"
+        - "traefik.http.services.influxdb.loadbalancer.server.port=$INFLUXDB_HTTP_PORT"
+
+  agent:
+    image: swarmpit/agent:latest
+    hostname: agent
+    environment:
+      - DOCKER_API_VERSION=1.35
+      - EVENT_ENDPOINT=http://swarmpit:8080/events
+      - HEALTH_CHECK_ENDPOINT=http://swarmpit:8080/version
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    deploy:
+      endpoint_mode: dnsrr
+      mode: global
+      labels:
+        swarmpit.agent: 'true'
+      <<: *low-resources

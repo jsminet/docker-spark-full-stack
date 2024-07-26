@@ -1,0 +1,51 @@
+x-mid-resources: &mid-resources
+  resources:
+    limits:
+      cpus: '1'
+      memory: 512M
+    reservations:
+      cpus: '0.25'
+      memory: 128M
+      
+services:  
+  prometheus:
+    # leave `v` here for match prometheus docker image tag
+    image: prom/prometheus:v${PROMETHEUS_VERSION}
+    hostname: prometheus
+    profiles:
+      - metrics
+    volumes:
+      - ./app/prometheus/conf/prometheus.yml:/etc/prometheus/prometheus.yml
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.prometheus.rule=Host(`$PROMETHEUS_DNS`)"
+        - "traefik.http.routers.prometheus.entrypoints=web"
+        - "traefik.http.routers.prometheus.service=prometheus"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=$PROMETHEUS_HTTP_PORT"
+        - "traefik.http.routers.prometheus1.rule=Host(`$PROMETHEUS_API_DNS`)"
+        - "traefik.http.routers.prometheus1.entrypoints=web"
+        - "traefik.http.routers.prometheus1.service=prometheus1"
+        - "traefik.http.services.prometheus1.loadbalancer.server.port=$PROMETHEUS_API_HTTP_PORT"
+
+  grafana:
+    image: grafana/grafana-oss:${GRAFANA_VERSION}
+    hostname: grafana
+    profiles:
+      - metrics
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED
+      - GF_AUTH_ANONYMOUS_ORG_ROLE
+    volumes:
+      - ./app/grafana/conf/prometheus.yaml:/etc/grafana/provisioning/datasources/prometheus.yaml
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.grafana.rule=Host(`$GRAFANA_DNS`)"
+        - "traefik.http.routers.grafana.entrypoints=web"
+        - "traefik.http.routers.grafana.service=grafana"
+        - "traefik.http.services.grafana.loadbalancer.server.port=$GRAFANA_HTTP_PORT"
