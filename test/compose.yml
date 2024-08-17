@@ -57,5 +57,21 @@ services:
     volumes: 
       - ../app/zookeeper/conf:$ZOOKEEPER_CONF_DIR
 
+  zeppelin:
+    image: apache/zeppelin:$ZEPPELIN_VERSION
+    hostname: zeppelin
+    ports:
+      - 8080:8080
+    environment:
+      - SPARK_MASTER=spark://$SPARK_MASTER_HOST:$SPARK_MASTER_PORT
+      - SPARK_HOME
+      - ZEPPELIN_CONF_DIR
+      - ZEPPELIN_LOG_DIR
+      - ZEPPELIN_NOTEBOOK_DIR
+    volumes:
+      - spark351:$SPARK_HOME
+      - ./app/spark:/app/spark
+      - ./app/zeppelin:/app/zeppelin
+
 volumes: 
   spark351:

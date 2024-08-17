@@ -25,34 +25,43 @@ This swarm stack is fully compatible with raspberry PI, base images are also bui
 ![Final result](images/image01.png)
 
 
-        
 ## 🧑🏻‍💻 Usage
 #### Launching using docker compose
 
 ```Bash
-$ docker compose up --remove-orphans -d && docker compose logs -f
+$ docker compose up
+$ docker compose down -v
 ```
 
 #### Launching using docker swarm
+
+**Warning** Due to json incompatibility between docker compose and docker swarm specifications, you must convert some tags, here is an example using linux sed command
+
 ```Bash
-$ docker stack deploy -c <(docker-compose config) stack-name
+docker compose config | sed '/published:/s/\"//g' | sed '/^name:/d' | sed -E 's/(cpus*[^:]+:)\s*([^"#\n]+)$/\1 "\2"/' > stack.yml
 ```
-Launching this docker compose file as-is will create a ingress/mesh network, the traefik edge router will redirect http and tcp request on correct container accordingly.
+Once the json is modify, use this command
+```Bash
+$ docker stack deploy -c stack.yml STACKNAME
+```
 
-Opened RPC ports
+Launching this will create a ingress/mesh network, the traefik edge router will redirect http and tcp request on correct container accordingly.
 
-|Port|Service|
-|---|---|
-|3306|MariaDB|
-|10009|Apache Kyuubi|
-|8020|Namenode|
-|9866|Datanode|
-|7077|Spark master|
+#### Default opened ports
+
+|Port|Port type|Service|
+|---|---|---|
+|3306|TCP|MariaDB|
+|10009|TCP|Apache Kyuubi|
+|8020|TCP|Namenode|
+|9866|TCP|Datanode|
+|7077|TCP|Spark master|
+|9000|HTTP|Minio|
 
 
 ## 🛠️ Scaling workers   
 ```bash
-$ docker service scale spark_spark-worker=8
+$ docker service scale STACKNAME_sparkworker=8
 ```
 
 ## Test on local cluster

@@ -35,9 +35,9 @@ x-very-high-resources: &very-high-resources
       memory: 1G
 
 include:
-  - compose-include-minio.yml
-  - compose-include-metrics.yml
-  - compose-include-swarmpit.yml
+  - include/compose-include-minio.yml
+  - include/compose-include-metrics.yml
+  - include/compose-include-swarmpit.yml
 services:
   traefik:
     image: traefik:3.0.4
