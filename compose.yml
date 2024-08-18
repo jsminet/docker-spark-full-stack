@@ -222,6 +222,8 @@ services:
     environment:
       - SPARK_MASTER=spark://$SPARK_MASTER_HOST:$SPARK_MASTER_PORT
       - SPARK_HOME
+      - SPARK_CONF_DIR
+      - SPARK_APP_NAME=ZeppelinOnDocker
       - ZEPPELIN_CONF_DIR
       - ZEPPELIN_LOG_DIR
       - ZEPPELIN_NOTEBOOK_DIR
@@ -245,7 +247,6 @@ services:
       - spark351:$SPARK_HOME
       - ./app/spark:/app/spark
       - ./app/zeppelin:/app/zeppelin
-      - ./app/kyuubi:/app/kyuubi
 
 volumes: 
   spark351:
