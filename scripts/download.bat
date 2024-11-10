@@ -1,7 +1,7 @@
 @echo on
 
 set MAVEN_MIRROR=https://repo1.maven.org/maven2
-set KYUUBI_VERSION=1.9.1
+set KYUUBI_VERSION=1.10.0
 set SPARK_VERSION=3.5.1
 set HADOOP_MAJOR_VERSION=3
 set AWS_JAVA_SDK_VERSION=1.12.757
