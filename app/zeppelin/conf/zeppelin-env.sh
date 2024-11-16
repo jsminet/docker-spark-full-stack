@@ -18,7 +18,7 @@
 
 # export JAVA_HOME=
 # export USE_HADOOP=                            # Whether include hadoop jars into zeppelin server process. (true or false)
-# export SPARK_MASTER=spark://spark-master:7077    # Spark master url. eg. spark://master_addr:7077. Leave empty if you want to use local mode.
+# export SPARK_MASTER=spark://sparkmaster:7077    # Spark master url. eg. spark://master_addr:7077. Leave empty if you want to use local mode.
 # export ZEPPELIN_ADDR                          # Bind address (default 127.0.0.1)
 # export ZEPPELIN_PORT                          # port number to listen (default 8080)
 # export ZEPPELIN_LOCAL_IP                      # Zeppelin's thrift server ip address, if not specified, one random IP address will be choosen.

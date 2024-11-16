@@ -21,7 +21,7 @@ services:
 
   sparkmaster:
     image: $SPARK_IMAGE:$SPARK_VERSION
-    hostname: sparkmaster
+    hostname: $SPARK_MASTER_HOST
     environment:
       - SPARK_MASTER_PORT
       - SPARK_MASTER_WEBUI_PORT
