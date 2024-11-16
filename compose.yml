@@ -224,6 +224,7 @@ services:
       - SPARK_HOME
       - SPARK_CONF_DIR
       - SPARK_APP_NAME=ZeppelinOnDocker
+      - USE_HADOOP
       - ZEPPELIN_CONF_DIR
       - ZEPPELIN_LOG_DIR
       - ZEPPELIN_NOTEBOOK_DIR
