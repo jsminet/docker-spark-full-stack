@@ -1,6 +1,6 @@
 x-superset-image: &superset-image apache/superset:latest
 x-superset-volumes: &superset-volumes # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
-  - ./docker:/app/docker
+  - ./app/superset:/app/docker
   - superset_home:/app/superset_home
 
 x-superset-env: &superset-env
@@ -87,7 +87,7 @@ services:
     restart: unless-stopped
     volumes:
       - postgres-data-ss:/var/lib/postgresql/data
-      #- ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      #- ./app/superset/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
 
   superset:
     <<: *superset-env
