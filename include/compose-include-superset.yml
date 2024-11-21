@@ -63,7 +63,7 @@ services:
       <<: *low-resources
       placement:
         constraints:
-          - node.role == manager
+          - node.role == worker
     restart: unless-stopped
     volumes:
       - redis-data:/data

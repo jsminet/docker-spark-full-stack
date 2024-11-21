@@ -55,7 +55,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
     deploy:
-      <<: *low-resources
+      <<: *mid-resources
       update_config:
         delay: 10s
         order: start-first
