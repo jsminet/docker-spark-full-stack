@@ -1,0 +1,171 @@
+x-superset-image: &superset-image apache/superset:latest
+x-superset-volumes: &superset-volumes # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
+  - ./docker:/app/docker
+  - superset_home:/app/superset_home
+
+x-superset-env: &superset-env
+  environment:
+    BUILD_SUPERSET_FRONTEND_IN_DOCKER: "false"
+    COMPOSE_PROJECT_NAME: superset
+    CYPRESS_CONFIG: "false"
+    DATABASE_DB: superset
+    DATABASE_DIALECT: postgresql
+    DATABASE_HOST: db
+    DATABASE_PASSWORD: superset
+    DATABASE_PORT: "5432"
+    DATABASE_USER: superset
+    ENABLE_PLAYWRIGHT: "false"
+    EXAMPLES_DB: examples
+    EXAMPLES_HOST: db
+    EXAMPLES_PASSWORD: examples
+    EXAMPLES_PORT: "5432"
+    EXAMPLES_USER: examples
+    FLASK_DEBUG: "true"
+    MAPBOX_API_KEY: ""
+    POSTGRES_DB: superset
+    POSTGRES_PASSWORD: superset
+    POSTGRES_USER: superset
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+    PYTHONPATH: /app/pythonpath:/app/docker/pythonpath_dev
+    REDIS_HOST: redis
+    REDIS_PORT: "6379"
+    SUPERSET_DNS: superset
+    SUPERSET_ENV: production
+    SUPERSET_LOAD_EXAMPLES: "no"
+    SUPERSET_PORT: "8088"
+    SUPERSET_SECRET_KEY: TEST_NON_DEV_SECRET
+
+x-low-resources: &low-resources
+  resources:
+    limits:
+      cpus: '0.3'
+      memory: 128M
+    reservations:
+      cpus: '0.15'
+      memory: 64M
+
+x-mid-resources: &mid-resources
+  resources:
+    limits:
+      cpus: '0.5'
+      memory: 256M
+    reservations:
+      cpus: '0.25'
+      memory: 128M
+
+services:
+  redis:
+    image: redis:7
+    container_name: superset_cache
+    hostname: redis
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *low-resources
+      placement:
+        constraints:
+          - node.role == manager
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+  db:
+    <<: *superset-env
+    image: postgres:15
+    container_name: db
+    hostname: db
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.tcp.services.postgres.loadbalancer.server.port=$DATABASE_PORT"
+        - "traefik.tcp.routers.postgres.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.postgres.entrypoints=postgres"
+    restart: unless-stopped
+    volumes:
+      - postgres-data-ss:/var/lib/postgresql/data
+      #- ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  superset:
+    <<: *superset-env
+    image: *superset-image
+    container_name: superset_app
+    hostname: superset
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      placement:
+        constraints:
+        - node.role == manager
+    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
+    user: "root"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.superset.rule=Host(`$SUPERSET_DNS`)"
+      - "traefik.http.routers.superset.entrypoints=web"
+      - "traefik.http.routers.superset.service=superset"
+      - "traefik.http.services.superset.loadbalancer.server.port=$SUPERSET_PORT"
+    volumes: *superset-volumes
+
+  superset-init:
+    <<: *superset-env
+    image: *superset-image
+    container_name: superset_init
+    hostname: superset-init
+    deploy:
+      restart_policy:
+        condition: none
+    command: ["/app/docker/docker-init.sh"]
+    user: "root"
+    volumes: *superset-volumes
+    healthcheck:
+      disable: true
+
+  superset-worker:
+    <<: *superset-env
+    image: *superset-image
+    container_name: superset_worker
+    hostname: superset-worker
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      placement:
+        constraints:
+        - node.role == worker
+    command: ["/app/docker/docker-bootstrap.sh", "worker"]
+    restart: unless-stopped
+    user: "root"
+    volumes: *superset-volumes
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME",
+        ]
+
+  superset-worker-beat:
+    <<: *superset-env
+    image: *superset-image
+    container_name: superset_worker_beat
+    hostname: superset-worker-beat
+    deploy:
+      endpoint_mode: dnsrr
+      <<: *mid-resources
+      placement:
+        constraints:
+        - node.role == worker
+    command: ["/app/docker/docker-bootstrap.sh", "beat"]
+    restart: unless-stopped
+    user: "root"
+    volumes: *superset-volumes
+    healthcheck:
+      disable: true
+
+volumes:
+  superset_home:
+  postgres-data-ss:
+  redis-data:
