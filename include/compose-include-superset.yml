@@ -108,7 +108,7 @@ services:
       - "traefik.http.routers.superset.rule=Host(`$SUPERSET_DNS`)"
       - "traefik.http.routers.superset.entrypoints=web"
       - "traefik.http.routers.superset.service=superset"
-      - "traefik.http.services.superset.loadbalancer.server.port=$SUPERSET_PORT"
+      - "traefik.http.services.superset.loadbalancer.server.port=$POSTGRES_RPC_PORT"
     volumes: *superset-volumes
 
   superset-init:
