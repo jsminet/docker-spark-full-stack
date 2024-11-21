@@ -75,7 +75,7 @@ services:
     hostname: db
     deploy:
       endpoint_mode: dnsrr
-      <<: *mid-resources
+      <<: *low-resources
       placement:
         constraints:
           - node.role == manager
