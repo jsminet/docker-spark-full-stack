@@ -41,7 +41,7 @@ include:
   - include/compose-include-superset.yml
 services:
   traefik:
-    image: traefik:3.0.4
+    image: traefik:3.2.1
     ports:
       # Exposes port 80 for incomming web requests
       - $TRAEFIK_HTTP_WEB_PORT:$TRAEFIK_HTTP_WEB_PORT
