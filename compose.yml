@@ -101,7 +101,7 @@ services:
       - KYUUBI_JAR_DIR
     deploy:
       endpoint_mode: dnsrr
-      <<: *very-high-resources
+      <<: *high-resources
       placement:
         constraints:
           - node.role == manager
@@ -132,7 +132,7 @@ services:
     hostname: metastore
     deploy:
       endpoint_mode: dnsrr
-      <<: *mid-resources
+      <<: *low-resources
       placement:
         constraints:
           - node.role == manager

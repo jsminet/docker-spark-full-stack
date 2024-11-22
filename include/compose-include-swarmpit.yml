@@ -68,7 +68,7 @@ services:
       - influx-data:/var/lib/influxdb
     deploy:
       endpoint_mode: dnsrr
-      <<: *mid-resources
+      <<: *low-resources
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.influxdb.rule=Host(`$INFLUXDB_DNS`)"
