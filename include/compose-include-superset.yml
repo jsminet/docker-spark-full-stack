@@ -53,6 +53,15 @@ x-mid-resources: &mid-resources
       cpus: '0.25'
       memory: 128M
 
+x-high-resources: &high-resources
+  resources:
+    limits:
+      cpus: '1'
+      memory: 1024M
+    reservations:
+      cpus: '1'
+      memory: 256M
+
 services:
   redis:
     image: redis:7
@@ -96,7 +105,7 @@ services:
     hostname: superset
     deploy:
       endpoint_mode: dnsrr
-      <<: *mid-resources
+      <<: *high-resources
       placement:
         constraints:
         - node.role == manager
@@ -117,6 +126,7 @@ services:
     container_name: superset_init
     hostname: superset-init
     deploy:
+      <<: *low-resources
       restart_policy:
         condition: none
     command: ["/app/docker/docker-init.sh"]
