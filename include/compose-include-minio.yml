@@ -14,7 +14,7 @@ services:
       - MINIO_ROOT_USER
       - MINIO_ROOT_PASSWORD
     deploy:
-      mode: global
+      replicas: 4
       endpoint_mode: dnsrr
       <<: *mid-resources
       update_config:
