@@ -55,7 +55,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./app/traefik/conf/traefik.yml:/etc/traefik/traefik.yml
     deploy:
-      <<: *mid-resources
+      <<: *low-resources
       update_config:
         delay: 10s
         order: start-first
@@ -158,7 +158,7 @@ services:
       - SPARK_WORKER_DIR
     deploy:
       endpoint_mode: dnsrr
-      <<: *high-resources
+      <<: *mid-resources
       placement:
         constraints:
           - node.role == manager
@@ -232,7 +232,7 @@ services:
       - ZEPPELIN_NOTEBOOK_DIR
     deploy:
       endpoint_mode: dnsrr
-      <<: *mid-resources
+      <<: *low-resources
       placement:
         constraints:
           - node.role == manager
